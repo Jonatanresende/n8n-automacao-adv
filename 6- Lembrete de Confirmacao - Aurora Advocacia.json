@@ -1,0 +1,625 @@
+{
+  "name": "6- Lembrete de Confirmacao - Aurora Advocacia",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 * * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        304
+      ],
+      "id": "8f20a212-7253-4ee2-8df9-b0ca56135d8e",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "agendamentos_adv",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "status",
+              "condition": "eq",
+              "keyValue": "agendado"
+            },
+            {
+              "keyName": "data_hora_inicio",
+              "condition": "gte",
+              "keyValue": "={{ new Date(Date.now() + 23*60*60000).toISOString() }}"
+            },
+            {
+              "keyName": "data_hora_inicio",
+              "condition": "lte",
+              "keyValue": "={{ new Date(Date.now() + 25*60*60000).toISOString() }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        208,
+        304
+      ],
+      "id": "a0a90635-fb52-4bdb-819a-9a3151f54ef9",
+      "name": "PuxarAgendamentos",
+      "credentials": {
+        "supabaseApi": {
+          "id": "QyVmMAWVKLOdh0MW",
+          "name": "Supabase-sistema-advogado"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b1c2d3e4-0003-4a1a-9a1a-000000000003",
+              "leftValue": "={{ $json.lembrete_enviado_em }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "2f849003-fa2e-4297-9248-fac3368f2c2a",
+              "leftValue": "={{ $json.data_hora_inicio }}",
+              "rightValue": "={{ new Date(Date.now() + 23*60*60000).toISOString() }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "after"
+              }
+            },
+            {
+              "id": "a957bc43-4383-4783-ae80-54f4600d3e46",
+              "leftValue": "={{ $json.data_hora_inicio }}",
+              "rightValue": "={{ new Date(Date.now() + 25*60*60000).toISOString() }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "before"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        304
+      ],
+      "id": "7d3b420e-4637-4f92-91b9-06dfecda96f7",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        624,
+        304
+      ],
+      "id": "2c049570-1a0c-499c-9f9c-9a7309b59901",
+      "name": "Loop"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "leads_adv",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $('Filter').item.json.lead_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        832,
+        224
+      ],
+      "id": "cf5288cc-91e2-486c-bf5d-07c4cb7f66b3",
+      "name": "PuxarLead",
+      "credentials": {
+        "supabaseApi": {
+          "id": "QyVmMAWVKLOdh0MW",
+          "name": "Supabase-sistema-advogado"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "c1d2e3f4-0007-4a1a-9a1a-000000000007",
+                    "leftValue": "={{ $json.id_conta_chatwoot }}",
+                    "rightValue": "null",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "PROSSEGUIR"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "d1e2f3a4-0008-4a1a-9a1a-000000000008",
+                    "leftValue": "={{ $json.id_conta_chatwoot }}",
+                    "rightValue": "null",
+                    "operator": {
+                      "type": "string",
+                      "operation": "empty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "PARAR"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1040,
+        224
+      ],
+      "id": "b9dea1a4-9322-4494-b8b1-99dc76df46ca",
+      "name": "verificarChatWoot"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1040,
+        384
+      ],
+      "id": "4d604a98-dc0d-4184-b6a9-4b306686fccf",
+      "name": "não fazer nada"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e1f2a3b4-0011-4a1a-9a1a-000000000011",
+              "name": "whatsapp_lead",
+              "value": "={{ $('PuxarLead').item.json.whatsapp_lead }}",
+              "type": "string"
+            },
+            {
+              "id": "e1f2a3b4-0012-4a1a-9a1a-000000000012",
+              "name": "id_conta_chatwoot",
+              "value": "={{ $('PuxarLead').item.json.id_conta_chatwoot }}",
+              "type": "string"
+            },
+            {
+              "id": "e1f2a3b4-0013-4a1a-9a1a-000000000013",
+              "name": "id_conversa_chatwoot",
+              "value": "={{ $('PuxarLead').item.json.id_conversa_chatwoot }}",
+              "type": "string"
+            },
+            {
+              "id": "e1f2a3b4-0014-4a1a-9a1a-000000000014",
+              "name": "id_lead_chatwoot",
+              "value": "={{ $('PuxarLead').item.json.id_lead_chatwoot }}",
+              "type": "string"
+            },
+            {
+              "id": "e1f2a3b4-0015-4a1a-9a1a-000000000015",
+              "name": "inbox_id_chatwoot",
+              "value": "={{ $('PuxarLead').item.json.inbox_id_chatwoot }}",
+              "type": "string"
+            },
+            {
+              "id": "e1f2a3b4-0016-4a1a-9a1a-000000000016",
+              "name": "url_chatwoot",
+              "value": "https://dreamingboxjellyfish-chatwoot.cloudfy.live/",
+              "type": "string"
+            },
+            {
+              "id": "e1f2a3b4-0017-4a1a-9a1a-000000000017",
+              "name": "id_agendamento_row",
+              "value": "={{ $('Filter').item.json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1248,
+        224
+      ],
+      "id": "0a3142ff-6c2a-455e-9f5f-0dcf018b4d8b",
+      "name": "setarInformacoes"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('setarInformacoes').item.json.whatsapp_lead }}",
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        1488,
+        400
+      ],
+      "id": "6fbcf117-1bd8-48a0-9640-78461f1814d2",
+      "name": "memoriaLead",
+      "credentials": {
+        "postgres": {
+          "id": "TTRluU2TzYgiju3q",
+          "name": "Postgres-sistema-advogado"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1344,
+        400
+      ],
+      "id": "6d316fd6-6b4c-4881-8bd6-6c8f59da05c2",
+      "name": "Gemini Lembrete",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "SgDNj9qOfHtuxYA1",
+          "name": "Gemini-curso-automacao"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Gerar lembrete de confirmação de presença.",
+        "options": {
+          "systemMessage": "=Dia e hora atual: {{ $now }}\n\n## IDENTIDADE\nVocê é **Ana**, secretária da **Angélica Tabosa | Advocacia Previdenciária**, escritório especializado em Direito Previdenciário.\n\n## FUNÇÃO\nEscrever uma única mensagem de lembrete, natural e acolhedora, avisando o lead que a consulta dele é amanhã, e perguntando se ele confirma presença.\n\n## DADOS DA CONSULTA\n- Nome do lead: {{ $('PuxarLead').item.json.nome_lead }}\n- Data e hora: {{ $('Filter').item.json.data_hora_inicio }}\n- Modalidade: {{ $('Filter').item.json.modalidade }}\n- Área previdenciária: {{ $('PuxarLead').item.json.area_previdenciaria }}\n\n## REGRAS DE MENSAGEM\n- Seja breve, natural, como uma mensagem real de WhatsApp.\n- Sempre pergunte explicitamente se a pessoa confirma a presença.\n- Nunca use linguagem técnica jurídica.\n- Não repita informações óbvias, vá direto ao ponto com acolhimento.\n- Formate a data e hora de forma legível (ex: \"amanhã, sexta-feira, às 12h\"), nunca no formato ISO cru.\n\n## FORMATO DE SAÍDA\nResponda apenas com o texto da mensagem, sem aspas, sem markdown, sem explicações."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        1456,
+        224
+      ],
+      "id": "3e1ebc31-92f4-4532-8ada-957b2e82a5e1",
+      "name": "Lembrete Agent"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('setarInformacoes').item.json.url_chatwoot }}api/v1/accounts/{{ $('setarInformacoes').item.json.id_conta_chatwoot }}/conversations/{{ $('setarInformacoes').item.json.id_conversa_chatwoot }}/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "content",
+              "value": "={{ $json.output }}"
+            },
+            {
+              "name": "message_type",
+              "value": "outgoing"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1728,
+        224
+      ],
+      "id": "7f824a7e-bb35-40fc-bff9-4186fa12fd23",
+      "name": "enviarMsgLead",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ORcXdpQUsAFVM0Vs",
+          "name": "chatwoot-sistema-advogado"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "agendamentos_adv",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('setarInformacoes').item.json.id_agendamento_row }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lembrete_enviado_em",
+              "fieldValue": "={{ $now }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1872,
+        224
+      ],
+      "id": "bccfcb33-8c7a-4c3c-bc88-17bc086abf9e",
+      "name": "marcar_lembrete",
+      "credentials": {
+        "supabaseApi": {
+          "id": "QyVmMAWVKLOdh0MW",
+          "name": "Supabase-sistema-advogado"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2080,
+        224
+      ],
+      "id": "0212e7ce-8859-4c01-a8a7-cd3a24f83e59",
+      "name": "Wait",
+      "webhookId": "c25ce267-9d29-495a-8334-4fc2c6206712"
+    },
+    {
+      "parameters": {
+        "content": "# LEMBRETE DE CONFIRMACAO DE PRESENCA\nRoda de hora em hora. Busca agendamentos ~24h a frente com status 'agendado' e sem lembrete enviado.\nGera mensagem natural via IA perguntando confirmacao, envia via Chatwoot, marca lembrete_enviado_em.\nA interpretacao da resposta do lead (confirma / nega / cancela) acontece no fluxo normal de conversa (1- Secretaria), nao aqui.",
+        "height": 260,
+        "width": 900,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "c9c7fa0d-1828-4db6-8ed5-bdfa2a21a567",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "PuxarAgendamentos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PuxarAgendamentos": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop": {
+      "main": [
+        [],
+        [
+          {
+            "node": "PuxarLead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PuxarLead": {
+      "main": [
+        [
+          {
+            "node": "verificarChatWoot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "verificarChatWoot": {
+      "main": [
+        [
+          {
+            "node": "setarInformacoes",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "não fazer nada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setarInformacoes": {
+      "main": [
+        [
+          {
+            "node": "Lembrete Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "memoriaLead": {
+      "ai_memory": [
+        [
+          {
+            "node": "Lembrete Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Lembrete": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Lembrete Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lembrete Agent": {
+      "main": [
+        [
+          {
+            "node": "enviarMsgLead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "enviarMsgLead": {
+      "main": [
+        [
+          {
+            "node": "marcar_lembrete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "marcar_lembrete": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "timezone": "America/Sao_Paulo",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "9aaf797f-c2e7-4b98-82e8-965ab2f575d7",
+  "meta": {
+    "instanceId": "8e15b4b139fc7de5826b5c0082e48be6d2a0a58f6c5ba1c90fe1a225d65da589"
+  },
+  "id": "tJxlIqo9OosFHCnO",
+  "tags": []
+}

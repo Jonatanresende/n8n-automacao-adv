@@ -1,0 +1,468 @@
+{
+  "name": "5- Qualificacao Previdenciaria - Aurora Advocacia",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "NomeLead"
+            },
+            {
+              "name": "mensagem_lead"
+            },
+            {
+              "name": "whatsapp-lead"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        48,
+        160
+      ],
+      "id": "78d14b11-db8c-4af4-b0f8-6b6ab773bd58",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fefd1410-c891-4e60-9361-630a5028eced",
+              "name": "NomeLead",
+              "value": "={{ $json.NomeLead }}",
+              "type": "string"
+            },
+            {
+              "id": "7300eb98-5df5-4ef6-8fa4-824ed3babe7b",
+              "name": "mensagem_lead",
+              "value": "={{ $json.mensagem_lead }}",
+              "type": "string"
+            },
+            {
+              "id": "09adafdc-6f77-4d83-a155-c732803a863d",
+              "name": "whatsapp_lead",
+              "value": "={{ $json['whatsapp-lead'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        256,
+        160
+      ],
+      "id": "e328a08d-9e5e-46ee-a4e8-6af8fc2d05a2",
+      "name": "setarInfo_qualificacao"
+    },
+    {
+      "parameters": {
+        "jsCode": "const checklists = {\n  aposentadoria_idade: `APOSENTADORIA POR IDADE (inclui regra rural)\n\nREGRAS REAIS (uso interno, para raciocinar - nao declame isso ao lead):\n- Regra geral pos-2019: mulher 62 anos + 15 anos de contribuicao; homem 65 anos + 20 anos de contribuicao.\n- Regra rural (segurado especial): mulher 55 anos + 15 anos de atividade rural comprovada; homem 60 anos + 15 anos. Nao precisa ter contribuido em dinheiro, so comprovar atividade.\n- Se a pessoa tiver a idade minima mas nao tiver certeza do tempo, ainda vale conduzir a conversa - o calculo exato e trabalho do advogado.\n\nCAMADA 1 - Acolhimento:\n\"Entendo. Depois de uma vida toda trabalhando, e mais que justo garantir esse direito. Me conta - voce ainda ta trabalhando ou ja parou?\"\n\nCAMADA 2 - Perguntas (uma de cada vez, natural, sem parecer formulario):\nP1: \"Quantos anos voce tem?\"\nP2: \"Voce tem ideia de quantos anos pagou ao INSS, mais ou menos? Pode ser com carteira assinada, MEI, autonomo ou trabalhador rural.\"\n   - Se disser \"nunca contribui\", verifique se pode ser rural (segurado especial) ou considere que pode ser caso de BPC/LOAS em vez de aposentadoria.\nP3 (condicional, so se ainda nao souber): \"Trabalhou sempre com carteira assinada ou teve periodos como autonomo, MEI, servidor publico ou trabalhador rural?\"\n   - Servidor publico federal/estadual pode ter regime proprio (RPPS), nao RGPS - se for o caso, oriente que a regra e diferente e a Dra. Angelica precisa analisar com calma.\nP4 (condicional, so se houver ambiguidade sobre a data de inicio das contribuicoes): \"Voce contribuia ao INSS antes de novembro de 2019? Isso pode fazer diferenca nas regras que se aplicam ao seu caso.\"\n   - Se a pessoa ja tem mais de 20 anos de trabalho CLT, e obvio que contribuia antes de 2019 - pule essa pergunta nesse caso.\nP5: \"Ja tentou dar entrada na aposentadoria? O INSS disse alguma coisa?\"\n\nCAMADA 3 - Fechamento:\n\"Essa questao das regras de transicao e bem especifica e muita gente acaba perdendo dinheiro por nao conhecer. A Dra. Angelica e especialista nisso - ela consegue calcular exatamente qual regra e mais vantajosa pro seu caso. Quer que eu marque uma conversa gratuita com ela?\"\n\nNo campo \"area\" da resposta final, use \"aposentadoria_idade\" tanto para o caso urbano quanto para o caso rural.`,\n\n  aposentadoria_tempo_contribuicao: `APOSENTADORIA POR TEMPO DE CONTRIBUICAO / REGRAS DE TRANSICAO\n\nREGRAS REAIS (uso interno):\n- So quem ja contribuia antes de novembro/2019 pode usar essas regras de transicao (pontos, pedagio 50%, pedagio 100%).\n- A pontuacao (idade + tempo) aumenta a cada ano.\n- Carencia minima geral: 15 anos de contribuicao para a maioria dos casos.\n- MEI e autonomo contam como contribuinte individual, desde que paguem o DAS/INSS.\n\nUse a mesma condução da rota de Aposentadoria por Idade (CAMADA 1, P1, P2, P3, P4, P5) - a diferenca e que aqui o lead e mais jovem e ainda nao bateu a idade minima da aposentadoria por idade, mas ja tem bastante tempo de contribuicao anterior a 2019.\n\nCAMADA 3 - Fechamento:\n\"Essa questao das regras de transicao e bem especifica e muita gente acaba perdendo dinheiro por nao conhecer. A Dra. Angelica e especialista nisso - ela consegue calcular exatamente qual regra e mais vantajosa pro seu caso. Quer que eu marque uma conversa gratuita com ela?\"\n\nNo campo \"area\" da resposta final, use \"aposentadoria_tempo_contribuicao\".`,\n\n  aposentadoria_especial: `APOSENTADORIA ESPECIAL - perguntas-chave: exposicao a agente nocivo (ruido, quimico, insalubridade) e por quanto tempo; se tem PPP (Perfil Profissiografico Previdenciario) ou laudo tecnico da empresa; tempo total nessa condicao (15/20/25 anos conforme atividade).`,\n\n  aposentadoria_invalidez: `APOSENTADORIA POR INCAPACIDADE PERMANENTE (invalidez)\n\nREGRAS REAIS (uso interno):\n- Exige incapacidade TOTAL e PERMANENTE para qualquer trabalho, sem perspectiva de reabilitacao.\n- Valor: 100% do salario de beneficio (maior que o auxilio-doenca).\n- Carencia de 12 contribuicoes, dispensada para acidente ou doencas graves (cancer, HIV, tuberculose, etc).\n- Pode ser pedida diretamente ou por conversao de auxilio-doenca.\n\nCAMADA 1 - Acolhimento:\n\"Entendo - e muito pesado quando a saude chega a esse ponto e voce ainda precisa lidar com a burocracia do INSS por cima. Me conta mais sobre a sua situacao.\"\n\nCAMADA 2 - Perguntas:\nP1: \"Qual e o problema de saude? Tem laudos ou relatorio medico sobre isso?\"\nP2: \"Seu medico ja disse que nao tem perspectiva de voce voltar a trabalhar, ou que a condicao e permanente?\"\nP3 (condicional, so se nao foi dito): \"Trabalhou com carteira assinada, foi autonomo ou MEI?\"\nP4: \"Voce chegou a receber auxilio-doenca pelo INSS antes? O que aconteceu?\"\n   - Se sim e foi cortado, pode ser caso de conversao direta para aposentadoria por incapacidade.\n\nCAMADA 3 - Fechamento:\n\"Quando a incapacidade e permanente, o beneficio correto e a aposentadoria por invalidez - e o valor costuma ser bem maior do que o auxilio-doenca. Muita gente fica recebendo o beneficio errado por anos sem saber. A Dra. Angelica pode analisar se esse e o caso. Quer que eu marque uma conversa gratuita com ela?\"`,\n\n  auxilio_doenca: `AUXILIO POR INCAPACIDADE TEMPORARIA (auxilio-doenca)\n\nREGRAS REAIS (uso interno):\n- Exige incapacidade por mais de 15 dias.\n- CLT: empresa paga os primeiros 15 dias, INSS paga do 16 dia em diante. Autonomo/MEI: INSS paga desde o 1o dia.\n- Carencia de 12 contribuicoes, dispensada para acidente ou doenca grave prevista em lei (cancer, HIV, tuberculose, etc).\n- Exige pericia medica do INSS. Se negado, cabe recurso administrativo (30 dias) ou acao judicial (5 anos).\n- Se a incapacidade for permanente, o caso muda para Aposentadoria por Incapacidade (area aposentadoria_invalidez).\n\nCAMADA 1 - Acolhimento:\n\"Que situacao dificil - estar doente e ainda ter que lutar com o INSS e muito pesado. Voce ta conseguindo se virar financeiramente enquanto isso?\"\n\nCAMADA 2 - Perguntas:\nP1: \"Qual e o problema de saude ou a lesao, se voce puder me contar?\"\n   - Se mencionar doenca grave (cancer, HIV, AVC, doencas degenerativas) ou acidente, a carencia e dispensada.\nP2: \"Voce tem atestado ou laudo do seu medico com o CID (aquele codigo da doenca)?\"\n   - Sem CID o INSS costuma rejeitar - oriente a buscar com o medico antes de dar entrada.\nP3 (condicional, so se nao foi dito): \"Ta trabalhando atualmente ou ja teve que parar? Se parou, ha quanto tempo mais ou menos?\"\n   - Se parou ha menos de 15 dias, e CLT, o INSS ainda nao paga (e o empregador). Se autonomo/MEI, ja tem direito.\nP4 (condicional, so se nao foi dito): \"Trabalha com carteira assinada, e autonomo, MEI ou esta desempregado?\"\n   - Se desempregado, verificar se ainda tem \"qualidade de segurado\" (periodo de graca) - nao descarte, a Dra. Angelica pode avaliar.\nP5 (condicional, so se nao for obvio pelo caso): \"Seu medico tem alguma previsao de quando voce poderia voltar ao trabalho, ou nao tem perspectiva de melhora?\"\n   - Se sem perspectiva de melhora, sinalize que pode ser caso de aposentadoria por incapacidade (area aposentadoria_invalidez) em vez de auxilio-doenca.\nP6: \"Ja foi a pericia do INSS? O que aconteceu?\"\n\nCAMADA 3 - Fechamento:\n\"Olha, pericia negada nao significa o fim - muito pelo contrario. A maioria dos casos que chegam ao escritorio ja passou por negativa antes. A Dra. Angelica sabe exatamente como contestar isso, tanto no recurso quanto na Justica. Quer que eu marque uma conversa gratuita com ela?\"`,\n\n  bpc_loas: `BPC/LOAS (idoso ou pessoa com deficiencia)\n\nREGRAS REAIS (uso interno):\n- Nao exige contribuicao ao INSS. Valor: 1 salario minimo.\n- Idoso: 65 anos ou mais, sem renda suficiente.\n- Pessoa com deficiencia (PcD): qualquer idade, deficiencia que impeca participacao em igualdade de condicoes na sociedade.\n- Renda familiar: menos de 1/4 do salario minimo por pessoa (juizes costumam analisar a situacao real, nao so a renda - nao descarte o caso so porque a conta deu um pouco acima).\n- Nao acumula com outro beneficio do INSS (exceto assistencia medica).\n- Pede no INSS ou no CRAS.\n\nSe o caso for de idoso (65+), va direto para as perguntas de renda, nao precisa perguntar sobre laudo de deficiencia.\nSe o caso for de pessoa com deficiencia (qualquer idade), pergunte sobre a condicao e limitacao antes da renda.\n\nCAMADA 1 - Acolhimento:\n- Se for dependente falando por outra pessoa: \"Entendo. Cuidar de alguem com essa condicao ja e muito desafiador - e ainda ter que lidar com o INSS por cima nao e facil. Me conta um pouco mais sobre a situacao dele/dela.\"\n- Se for a propria pessoa: \"Entendo. Sei que nao e facil lidar com tudo isso ao mesmo tempo. Me conta um pouco mais sobre a sua situacao.\"\n- Se for para um idoso: \"Entendo. Cuidar disso no INSS pode ser bem burocratico. Me conta um pouquinho mais sobre a situacao.\"\n\nCAMADA 2 - Perguntas (adapte conforme idoso ou PcD):\nPara idoso: \"Ele/ela tem 65 anos ou mais?\" (se sim, pule direto pra renda)\nPara PcD: \"Qual e a deficiencia ou condicao de saude, se voce puder me contar?\" / \"Essa condicao limita ele/ela de participar das atividades do dia a dia como outras pessoas da mesma idade fazem normalmente?\" / \"Tem algum laudo ou relatorio medico que descreva essa limitacao?\"\nPara ambos: \"Ele/ela ja recebe algum outro beneficio do INSS, como aposentadoria ou pensao?\"\n   - BPC nao acumula com outro beneficio do INSS. Se ja recebe, informe com gentileza que pode nao ser possivel acumular, mas que vale a pena a Dra. Angelica avaliar qual e mais vantajoso.\nPara ambos: \"Quantas pessoas moram na mesma casa? E qual seria a renda total, mais ou menos?\"\n   - Divida a renda total pelo numero de moradores. Se der menos de 1/4 do salario minimo, o criterio de renda esta atendido. Se der mais, ainda pode valer a pena (juizes analisam a situacao real) - nao descarte o caso automaticamente.\nPara ambos: \"Voce ja tentou pedir o BPC para ele/ela junto ao INSS ou no CRAS? Se sim, o que aconteceu?\" (pergunte sempre para o responsavel, se for o caso)\n\nCAMADA 3 - Fechamento:\n\"Pelo que voce me descreveu, esse e exatamente o tipo de caso que a Dra. Angelica atende. Ela ja ajudou muitas familias em situacao parecida - inclusive casos que tinham sido negados antes e conseguiram na Justica. Quer que eu marque uma conversa gratuita com ela?\"`,\n\n  pensao_morte: `PENSAO POR MORTE\n\nREGRAS REAIS (uso interno):\n- Dependentes de segurado ou aposentado falecido tem direito.\n- Ordem de dependentes: conjuge/companheiro(a), filhos ate 21 anos (ou invalidos de qualquer idade), pais (se nao houver os anteriores).\n- Uniao estavel TEM direito, precisa provar (contas conjuntas, declaracao de IR, filhos em comum, residencia compartilhada).\n- Prazo: pedir em ate 90 dias do obito para receber desde a data do obito; depois, recebe so a partir da data do pedido.\n- Valor: 50% + 10% por dependente (maximo 100%).\n\nCAMADA 1 - Acolhimento (sempre com maxima empatia):\n\"Sinto muito pela perda. Sei que e um momento muito dificil e ter que lidar com questoes burocraticas por cima torna tudo mais pesado ainda. To aqui pra ajudar no que puder.\"\n\nCAMADA 2 - Perguntas (com cuidado e sem pressa):\nP1: \"Qual era a sua relacao com a pessoa que faleceu? Conjuge, companheiro(a), filho(a) ou outro familiar?\"\n   - Pais do falecido tambem podem ter direito se nao houver conjuge ou filhos - nao descarte dependentes indiretos.\nP2 (condicional, so se for conjuge ou companheiro(a)): \"Voces eram casados oficialmente ou viviam em uniao estavel?\"\n   - Uniao estavel tem direito, mas exige comprovacao - pergunte depois sobre documentos disponiveis.\nP3: \"Ele/ela trabalhava com carteira, era autonomo(a), MEI ou ja era aposentado(a) pelo INSS?\"\n   - Se servidor publico, pode ser regime proprio (RPPS) - oriente para a Dra. Angelica analisar. Se nunca contribuiu e nao era aposentado, considere se pode ser caso de BPC/LOAS.\nP4: \"Ha quanto tempo ocorreu o falecimento?\"\n   - Se passou mais de 90 dias, o pagamento retroativo ao obito nao e mais possivel - comeca so do pedido. Informe com cuidado, sem alarmar, e oriente a pedir o quanto antes.\nP5 (condicional, so se for conjuge/companheiro(a)): \"Quantos filhos dependentes ha? E qual a idade de cada um?\"\nP6: \"Voce ja tentou pedir a pensao junto ao INSS? O que aconteceu?\" (sempre pergunte ao responsavel que esta falando)\n\nCAMADA 3 - Fechamento:\n\"Uniao estavel tambem da direito a pensao, mesmo sem casamento no papel - e isso e algo que muita gente nao sabe e acaba perdendo o beneficio. A Dra. Angelica pode te orientar exatamente sobre o que e preciso para comprovar. Quer que eu marque uma conversa gratuita com ela?\"`,\n\n  auxilio_acidente: `AUXILIO-ACIDENTE\n\nREGRAS REAIS (uso interno):\n- Pago a quem teve acidente (trabalho ou nao) e ficou com sequela PERMANENTE que reduz a capacidade de trabalho - a pessoa ainda consegue trabalhar, mas com limitacao.\n- Valor: 50% do salario de beneficio. Acumula com salario e com auxilio-doenca (enquanto afastado). NAO acumula com aposentadoria.\n- So para empregado CLT, avulso e segurado especial - autonomo/MEI/contribuinte individual NAO tem direito.\n- Nao tem carencia.\n\nCAMADA 1 - Acolhimento:\n\"Entendo. Sofrer um acidente e ainda ficar com sequela e algo que muda tudo. Me conta mais sobre o que aconteceu.\"\n\nCAMADA 2 - Perguntas:\nP1: \"Que tipo de acidente foi? Foi no trabalho ou fora do trabalho?\"\n   - Se foi acidente de trabalho, a empresa deveria ter emitido CAT (Comunicacao de Acidente de Trabalho). Se nao emitiu, e possivel pedir ao sindicato ou medico.\nP2: \"Ficou com alguma sequela permanente por causa do acidente? Por exemplo, limitacao de movimento, perda de forca, dificuldade para fazer certas tarefas?\"\nP3: \"Voce ainda consegue trabalhar, mesmo que com mais dificuldade, ou ficou totalmente incapacitado?\"\n   - Se totalmente incapacitado, pode ser caso de auxilio-doenca ou aposentadoria por invalidez, nao auxilio-acidente.\nP4 (condicional, so se nao for obvio): \"Voce trabalha com carteira assinada?\"\n   - Auxilio-acidente nao se aplica a autonomo/MEI - se for o caso, considere se ha outra area aplicavel.\nP5: \"Voce ja recebeu auxilio-doenca por causa desse acidente? O INSS deu alta recentemente?\"\n\nCAMADA 3 - Fechamento:\n\"O auxilio-acidente e um direito que muita gente nao sabe que tem - e que pode ser recebido junto com o salario. A Dra. Angelica pode verificar se voce se encaixa e ajudar a garantir esse beneficio. Quer que eu marque uma conversa gratuita com ela?\"`,\n\n  salario_maternidade: `SALARIO-MATERNIDADE\n\nREGRAS REAIS (uso interno):\n- CLT e domestica: nao precisa carencia. Autonoma/MEI/contribuinte individual: precisa de 10 meses de contribuicao antes do parto. Rural: precisa de 10 meses de atividade rural comprovada, sem necessidade de pagamento em dinheiro.\n- Desempregada pode ter direito se ainda estiver no \"periodo de graca\" (12 a 36 meses conforme tempo de contribuicao anterior).\n- Duracao: 120 dias (parto ou adocao/guarda), 14 dias (aborto nao criminoso/espontaneo), 120 dias (natimorto).\n- Demissao de gestante e ilegal na maioria dos casos - ela ainda tem direito ao beneficio pelo INSS.\n- Pai/companheiro tem direito se a mae falecer ou nao tiver qualidade de segurada.\n\nCAMADA 1 - Acolhimento:\n\"Que momento especial! E e muito importante garantir esse direito - voce vai precisar de tranquilidade pra cuidar do bebe. Me conta um pouco mais sobre sua situacao.\"\nSe for aborto ou natimorto, acolha com maxima empatia antes de qualquer pergunta tecnica: \"Sinto muito pelo que voce passou. Saiba que voce tambem tem direitos nesse momento - e a gente pode te ajudar a garantir eles. Me conta mais, quando voce quiser.\"\n\nCAMADA 2 - Perguntas:\nP1 (condicional, so se nao foi dito): \"Voce trabalha com carteira assinada, e domestica, autonoma, MEI ou nao contribui ao INSS atualmente?\"\nP2 (condicional, so se nao foi dito): \"Ja teve o bebe ou ainda esta gravida? Se ja nasceu, ha quanto tempo?\"\nP3 (condicional, so se autonoma/MEI/rural e nao foi dito): \"Ha quanto tempo voce esta contribuindo ao INSS regularmente? Precisa de pelo menos 10 meses antes do parto.\"\nP4 (condicional, so se for caso de aborto/perda): \"Voce tem atestado medico com o CID e informacao sobre as semanas de gestacao?\"\nP5: \"O INSS chegou a negar o pedido? Qual foi o motivo?\"\n\nCAMADA 3 - Fechamento:\n\"Muitas negativas de salario-maternidade acontecem por erro na documentacao ou no tipo de contribuicao - nao porque a pessoa nao tem direito. A Dra. Angelica resolve isso com frequencia. Quer que eu marque uma conversa gratuita com ela?\"`,\n\n  revisao_beneficio: `REVISAO DE BENEFICIO - perguntas-chave: se ja recebe algum beneficio do INSS, qual e desde quando; motivo da suspeita de valor incorreto (ex: nao incluiu contribuicoes antigas, teto, etc).`,\n\n  nao_identificada: `AREA AINDA NAO IDENTIFICADA - pergunte diretamente ao lead qual situacao previdenciaria ele quer resolver, oferecendo as opcoes mais comuns (aposentadoria, auxilio por incapacidade, BPC/LOAS, pensao por morte) ate identificar a area correta.`\n};\n\nconst texto = ($json.mensagem_lead || '').toLowerCase();\n\nconst regras = [\n  { area: 'bpc_loas', termos: ['bpc', 'loas', 'beneficio assistencial', 'nunca contribuiu', 'nunca trabalhei de carteira'] },\n  { area: 'aposentadoria_especial', termos: ['insalubre', 'periculosidade', 'ppp', 'agente nocivo', 'aposentadoria especial'] },\n  { area: 'aposentadoria_invalidez', termos: ['invalidez', 'nao consigo mais trabalhar', 'incapacidade permanente'] },\n  { area: 'auxilio_doenca', termos: ['auxilio-doenca', 'auxilio doenca', 'atestado', 'afastado do trabalho', 'incapacidade temporaria'] },\n  { area: 'aposentadoria_idade', termos: ['aposentar por idade', 'aposentadoria por idade', '65 anos', '62 anos', 'trabalhador rural', 'segurado especial'] },\n  { area: 'aposentadoria_tempo_contribuicao', termos: ['tempo de contribuicao', 'pontos', 'pedagio', 'regra de transicao'] },\n  { area: 'pensao_morte', termos: ['pensao por morte', 'meu marido faleceu', 'minha esposa faleceu', 'pai faleceu', 'mae faleceu'] },\n  { area: 'auxilio_acidente', termos: ['auxilio-acidente', 'sequela', 'acidente e ficou'] },\n  { area: 'salario_maternidade', termos: ['salario-maternidade', 'estou gravida', 'tive nenem', 'licenca maternidade'] },\n  { area: 'revisao_beneficio', termos: ['revisao', 'valor errado', 'beneficio errado', 'aposentadoria baixa'] }\n];\n\nlet areaDetectada = 'nao_identificada';\nfor (const regra of regras) {\n  if (regra.termos.some(t => texto.includes(t))) {\n    areaDetectada = regra.area;\n    break;\n  }\n}\n\nreturn [\n  {\n    json: {\n      ...$json,\n      area_detectada: areaDetectada,\n      checklist: checklists[areaDetectada]\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        464,
+        160
+      ],
+      "id": "f4e5123b-312f-4d74-adac-055943c2c0c9",
+      "name": "classificar_area"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('setarInfo_qualificacao').item.json.whatsapp_lead }}",
+        "contextWindowLength": 40
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        768,
+        368
+      ],
+      "id": "43c1fe49-f9db-444c-860d-6656b5fc6eb2",
+      "name": "Memoria Qualificacao",
+      "credentials": {
+        "postgres": {
+          "id": "TTRluU2TzYgiju3q",
+          "name": "Postgres-sistema-advogado"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        624,
+        368
+      ],
+      "id": "0ed3f9f6-5841-4d9c-be0a-af2c54d93d1f",
+      "name": "Gemini Qualificacao",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "SgDNj9qOfHtuxYA1",
+          "name": "Gemini-curso-automacao"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.mensagem_lead }}\n\n{{ $json.NomeLead }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=Dia e hora atual: {{ $now }}\n\n## IDENTIDADE E FUNCAO\nVoce e um agente de triagem previdenciaria da **Angélica Tabosa | Advocacia Previdenciária**. Sua funcao e conversar com o lead pra entender a situacao dele em relacao a beneficios do INSS, coletar as informacoes necessarias, e retornar um veredito estruturado. Voce NUNCA substitui a analise de um advogado - voce apenas faz uma triagem inicial.\n\n## AREA IDENTIFICADA NESTA CONVERSA\n{{ $json.checklist }}\n\n## COMO CONDUZIR\n- Se a area ainda nao estiver clara, pergunte diretamente ao lead o que ele quer resolver, de forma acolhedora.\n- Colete as respostas do checklist acima ao longo da conversa, uma ou duas perguntas por vez, nunca um interrogatorio.\n- Nunca afirme com certeza absoluta que o lead \"tem direito\" ou \"nao tem direito\". Use sempre linguagem como \"pelo que voce me contou, e bem provavel que...\" - a confirmacao final e sempre do advogado.\n- Nunca prometa valores de beneficio ou prazos de processo.\n\n## FLUXO DE RESPOSTA (IMPORTANTE)\nToda resposta sua e estruturada, mas isso NAO significa que voce precisa concluir a qualificacao a cada mensagem. Use os campos assim:\n- `resposta_ao_lead`: o que voce vai falar agora pro lead. No maximo 1 frase curta de acolhimento antes da pergunta (ou nenhuma, se nao for necessario) - nunca reformule tudo que o lead ja contou. Va direto ao ponto. Tom natural e acolhedor, mas sem enrolação.\n- `qualificacao_completa`: escreva exatamente \"nao\" enquanto voce ainda precisa de mais informacoes do checklist; escreva exatamente \"sim\" somente quando ja tiver o suficiente pra dar um veredito (nao precisa de 100% do checklist, so o essencial pra uma triagem razoavel).\n- Enquanto `qualificacao_completa` for \"nao\", os campos `area`, `veredito`, `resumo` e `respostas_coletadas` devem refletir o que ja foi entendido ate agora (podem estar parciais/incompletos), mas o campo `resposta_ao_lead` e o que realmente importa nesse momento.\n\n## REGRA DE OURO DO VEREDITO\nNa duvida, classifique `veredito` como \"duvidoso\", nunca como \"sem_direito_aparente\". Direito previdenciario tem muita nuance (tempo rural averbado, insalubridade nao reconhecida formalmente, etc.) que voce nao consegue avaliar com seguranca. So use \"sem_direito_aparente\" quando houver um criterio objetivo e inequivoco de exclusao (ex: renda muito acima do teto do BPC e nenhum outro beneficio citado se aplica). Enquanto `qualificacao_completa` for \"nao\", use \"duvidoso\" como valor provisorio de `veredito`.\n\n## FORMATO DA RESPOSTA\n\nResponda somente com um JSON valido.\n\nNao escreva explicacoes, comentarios ou qualquer texto fora do JSON.\n\nUse exatamente esta estrutura:\n\n{\n  \"resposta_ao_lead\": \"\",\n  \"qualificacao_completa\": \"\",\n  \"area\": \"\",\n  \"veredito\": \"\",\n  \"resumo\": \"\",\n  \"respostas_coletadas\": \"\"\n}\n\n## Regras obrigatorias\n\n- Nao escreva nada antes ou depois do JSON.\n- Nao utilize markdown.\n- Nao use crases.\n- Nao adicione campos extras.\n- Todos os valores devem ser string (inclusive qualificacao_completa, que deve ser exatamente \"sim\" ou \"nao\").\n- `area` deve ser um destes codigos: aposentadoria_idade, aposentadoria_tempo_contribuicao, aposentadoria_especial, aposentadoria_invalidez, auxilio_doenca, bpc_loas, pensao_morte, auxilio_acidente, salario_maternidade, revisao_beneficio, nao_identificada.\n- `veredito` deve ser exatamente um destes: provavel_direito, duvidoso, sem_direito_aparente.\n- `respostas_coletadas` e texto corrido (nao JSON, nao lista) resumindo as respostas do checklist que o lead ja deu ate agora. Caso nenhuma informacao tenha sido coletada ainda, preencha com \"\" (string vazia)."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        688,
+        160
+      ],
+      "id": "d63d8570-2ff8-4d18-b5a9-4a0365466614",
+      "name": "Qualificacao"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"resposta_ao_lead\": \"Entendi! So mais uma coisa pra te ajudar melhor: qual e a renda total da familia e quantas pessoas moram na mesma casa que seu filho?\",\n  \"qualificacao_completa\": \"nao\",\n  \"area\": \"bpc_loas\",\n  \"veredito\": \"duvidoso\",\n  \"resumo\": \"O lead Jose Almeida relata que o filho e autista e quer saber sobre BPC/LOAS. Ainda faltam dados de renda familiar e composicao do domicilio para confirmar o criterio de renda per capita.\",\n  \"respostas_coletadas\": \"tipo_beneficio: bpc_loas; possui_deficiencia: sim; renda_familiar_per_capita: a confirmar\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        928,
+        368
+      ],
+      "id": "66190115-3100-4b78-a65f-3090c4fd06e3",
+      "name": "Structured Output Parser Qualificacao"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f1a2b3c4-d5e6-47f8-a9b0-c1d2e3f4a5b6",
+              "leftValue": "={{ $json.output.qualificacao_completa }}",
+              "rightValue": "sim",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        912,
+        160
+      ],
+      "id": "87e4bab8-b2fc-4be3-8c53-49ff35c03c70",
+      "name": "qualificacao_completa?"
+    },
+    {
+      "parameters": {
+        "jsCode": "const veredito = $json.output.veredito;\nconst proximoPasso = (veredito === 'provavel_direito' || veredito === 'duvidoso') ? 'agendar' : 'dispensar';\n\nreturn [\n  {\n    json: {\n      resposta_ao_lead: $json.output.resposta_ao_lead,\n      area: $json.output.area,\n      veredito: veredito,\n      resumo: $json.output.resumo,\n      respostas_coletadas: $json.output.respostas_coletadas,\n      proximo_passo: proximoPasso\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        80
+      ],
+      "id": "aac43435-3964-4fa6-9443-1420b4844bc4",
+      "name": "definir_proximo_passo"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a9b8c7d6-e5f4-43a2-b1c0-d9e8f7a6b5c4",
+              "name": "response",
+              "value": "={{ $json.output.resposta_ao_lead }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1120,
+        240
+      ],
+      "id": "39b54d24-bbfe-460f-8f9d-9f1c1793de45",
+      "name": "Edit Fields - Em Andamento"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "leads_adv",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "whatsapp_lead",
+              "condition": "eq",
+              "keyValue": "={{ $('setarInfo_qualificacao').item.json.whatsapp_lead }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "area_previdenciaria",
+              "fieldValue": "={{ $json.area }}"
+            },
+            {
+              "fieldId": "status_qualificacao",
+              "fieldValue": "={{ $json.veredito }}"
+            },
+            {
+              "fieldId": "respostas_qualificacao",
+              "fieldValue": "={{ { texto: $json.respostas_coletadas } }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        80
+      ],
+      "id": "1795a5ab-1188-41c4-89cb-797c37f27bc9",
+      "name": "atualizarQualificacao",
+      "credentials": {
+        "supabaseApi": {
+          "id": "QyVmMAWVKLOdh0MW",
+          "name": "Supabase-sistema-advogado"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "472e82c2-2105-4bc1-9e83-a810077980e9",
+              "name": "response",
+              "value": "=Área identificada: {{ $('definir_proximo_passo').item.json.area }}\nVeredito: {{ $('definir_proximo_passo').item.json.veredito }}\nResumo: {{ $('definir_proximo_passo').item.json.resumo }}\nPróximo passo: {{ $('definir_proximo_passo').item.json.proximo_passo }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1536,
+        80
+      ],
+      "id": "0d5ba507-4991-4d36-9509-f495a712de0a",
+      "name": "Edit Fields Qualificacao"
+    },
+    {
+      "parameters": {
+        "content": "# QUALIFICACAO PREVIDENCIARIA\nTriagem de area + checklist dinamico + veredito (provavel_direito / duvidoso / sem_direito_aparente).\nRegra de ouro: na duvida, sempre 'duvidoso'.",
+        "height": 620,
+        "width": 1500,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "2f65c96a-070c-40f2-a610-b8296996d36e",
+      "name": "Sticky Note Qualificacao"
+    },
+    {
+      "parameters": {
+        "content": "Classificacao leve por palavra-chave.\nSo carrega o checklist da area detectada no prompt (economiza tokens).",
+        "height": 180,
+        "width": 280,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        448,
+        288
+      ],
+      "typeVersion": 1,
+      "id": "603368dc-e6dc-42cb-a972-bc06d4333b23",
+      "name": "Sticky Note Classificacao"
+    },
+    {
+      "parameters": {
+        "content": "Grava o resultado em leads_adv:\narea_previdenciaria, status_qualificacao, respostas_qualificacao",
+        "width": 260,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1120,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "f4ecf07d-cbbc-4445-9e47-d6abf026ac8e",
+      "name": "Sticky Note Supabase"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "setarInfo_qualificacao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setarInfo_qualificacao": {
+      "main": [
+        [
+          {
+            "node": "classificar_area",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "classificar_area": {
+      "main": [
+        [
+          {
+            "node": "Qualificacao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memoria Qualificacao": {
+      "ai_memory": [
+        [
+          {
+            "node": "Qualificacao",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Qualificacao": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Qualificacao",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser Qualificacao": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Qualificacao",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qualificacao": {
+      "main": [
+        [
+          {
+            "node": "qualificacao_completa?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "qualificacao_completa?": {
+      "main": [
+        [
+          {
+            "node": "definir_proximo_passo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields - Em Andamento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "definir_proximo_passo": {
+      "main": [
+        [
+          {
+            "node": "atualizarQualificacao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "atualizarQualificacao": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields Qualificacao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "timezone": "America/Sao_Paulo",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "1ac72aa8-6e83-4629-8ed3-6666b6c3bdf0",
+  "meta": {
+    "instanceId": "8e15b4b139fc7de5826b5c0082e48be6d2a0a58f6c5ba1c90fe1a225d65da589"
+  },
+  "id": "sQShf0rZF3u3XzTb",
+  "tags": []
+}

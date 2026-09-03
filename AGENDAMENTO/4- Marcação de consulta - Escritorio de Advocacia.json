@@ -1,0 +1,1437 @@
+{
+  "name": "4- Marcação de consulta - Escritorio de Advocacia",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "86ff282a-3ede-4417-98c1-0d10858bc5dc",
+              "name": "response",
+              "value": "=Agendamento concluído para o dia: {{ $('setarInfo').item.json.data_formatada }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "652d9aa6-1482-4cd4-9913-2a0731a5a5a8",
+      "name": "response1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3360,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "content": "# Agendamento",
+        "height": 1484,
+        "width": 3596,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "34a9b928-9f58-46c0-a5a2-6e4b94d020f1",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "resource": "calendar",
+        "calendar": {
+          "__rl": true,
+          "value": "advogadosistema26@gmail.com",
+          "mode": "list",
+          "cachedResultName": "advogadosistema26@gmail.com"
+        },
+        "timeMin": "={{ $('setarInformacoes').item.json.inicio_reuniao }}",
+        "timeMax": "={{ $('setarInformacoes').item.json.final_reuniao }}",
+        "options": {}
+      },
+      "id": "b1df9690-fafe-441a-9f45-735988658cc0",
+      "name": "Disponibilidade",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.1,
+      "position": [
+        1408,
+        320
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "cma6no9DRS2OEeJ2",
+          "name": "Google Calendar-Lembrete"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "advogadosistema26@gmail.com",
+          "mode": "list",
+          "cachedResultName": "advogadosistema26@gmail.com"
+        },
+        "start": "={{ $('setarInformacoes').item.json.inicio_reuniao }}",
+        "end": "={{ $('setarInformacoes').item.json.final_reuniao }}",
+        "additionalFields": {
+          "attendees": [],
+          "conferenceDataUi": {
+            "conferenceDataValues": {}
+          },
+          "description": "=Nome do cliente: {{ $('setarInformacoes').item.json.nome_lead }}\nWhatsapp: {{ $('setarInformacoes').item.json.whatsapp_lead }}\nAssunto: {{ $('setarInformacoes').item.json.assunto }}\nTipo de consulta: {{ $('setarInformacoes').item.json.tipo_consulta }}\n",
+          "summary": "={{ $('setarInformacoes').item.json.nome_lead }} | {{ $('setarInformacoes').item.json.tipo_consulta }}"
+        }
+      },
+      "id": "1346057c-be91-4781-af37-ff5fbaa5d1ca",
+      "name": "Marca",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.1,
+      "position": [
+        1936,
+        320
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "cma6no9DRS2OEeJ2",
+          "name": "Google Calendar-Lembrete"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "advogadosistema26@gmail.com",
+          "mode": "list",
+          "cachedResultName": "advogadosistema26@gmail.com"
+        },
+        "limit": 1,
+        "options": {}
+      },
+      "id": "5872035a-bbd2-4d9d-b4d9-5bf19d05d332",
+      "name": "Já tem um evento",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.1,
+      "position": [
+        976,
+        272
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "cma6no9DRS2OEeJ2",
+          "name": "Google Calendar-Lembrete"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "advogadosistema26@gmail.com",
+          "mode": "list",
+          "cachedResultName": "advogadosistema26@gmail.com"
+        },
+        "eventId": "={{ $('Verifica evento').item.json.id }}",
+        "options": {}
+      },
+      "id": "7fcb0fae-22b2-4cd4-bb2c-f8ab29d23a02",
+      "name": "Google Calendar1",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.1,
+      "position": [
+        1200,
+        640
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "cma6no9DRS2OEeJ2",
+          "name": "Google Calendar-Lembrete"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "calendar": {
+          "__rl": true,
+          "value": "advogadosistema26@gmail.com",
+          "mode": "list",
+          "cachedResultName": "advogadosistema26@gmail.com"
+        },
+        "eventId": "={{ $('setarInformacoes').item.json.id_agendamento }}",
+        "useDefaultReminders": false,
+        "updateFields": {
+          "end": "={{ $('setarInformacoes').item.json.final_reuniao }}",
+          "sendUpdates": "all",
+          "start": "={{ $('setarInformacoes').item.json.inicio_reuniao }}"
+        }
+      },
+      "id": "a5b8c4c0-27f5-44ff-8742-e9cde026c4da",
+      "name": "Google Calendar3",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.1,
+      "position": [
+        1856,
+        880
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "cma6no9DRS2OEeJ2",
+          "name": "Google Calendar-Lembrete"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "advogadosistema26@gmail.com",
+          "mode": "list",
+          "cachedResultName": "advogadosistema26@gmail.com"
+        },
+        "returnAll": true,
+        "options": {
+          "query": "={{ $('setarInformacoes').item.json.id_agendamento }}"
+        }
+      },
+      "id": "83fd2723-3bdf-41b7-9cfc-d55cca244750",
+      "name": "Verifica evento",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.1,
+      "position": [
+        976,
+        640
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "cma6no9DRS2OEeJ2",
+          "name": "Google Calendar-Lembrete"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "advogadosistema26@gmail.com",
+          "mode": "list",
+          "cachedResultName": "advogadosistema26@gmail.com"
+        },
+        "returnAll": true,
+        "options": {
+          "query": "={{ $('setarInformacoes').item.json.whatsapp_lead }}"
+        }
+      },
+      "id": "6196ddd4-1b46-4562-9e3d-37d4e99e7b8e",
+      "name": "Verifica evento1",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.1,
+      "position": [
+        1632,
+        880
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "cma6no9DRS2OEeJ2",
+          "name": "Google Calendar-Lembrete"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "be5649a9-7624-4621-bd2d-84c25577c0ce",
+              "leftValue": "={{ $json.available }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "07ce0fa2-d68b-4bfd-8e71-249382300a11",
+      "name": "If6",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1280,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "calendar",
+        "calendar": {
+          "__rl": true,
+          "value": "advogadosistema26@gmail.com",
+          "mode": "list",
+          "cachedResultName": "advogadosistema26@gmail.com"
+        },
+        "timeMin": "={{ $json.inicio_reuniao }}",
+        "timeMax": "={{ $json.final_reuniao }}",
+        "options": {}
+      },
+      "id": "3f347cac-226a-4a5c-a1e9-911cecea8168",
+      "name": "Disponibilidade1",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.1,
+      "position": [
+        992,
+        880
+      ],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "cma6no9DRS2OEeJ2",
+          "name": "Google Calendar-Lembrete"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "86ff282a-3ede-4417-98c1-0d10858bc5dc",
+              "name": "response",
+              "value": "=Você já tem uma reunião agendada para o dia: {{(() => { \n    const data = new Date($json.start.dateTime);\n    const opcoes = { day: '2-digit', month: 'long', hour: '2-digit', minute: '2-digit' };\n    return `dia ${data.toLocaleDateString('pt-BR', opcoes).replace(' ', ' de ').replace(',', ' às')}`;\n})()}} gostaria de reagendar? ",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ba88937d-4f84-448d-85f7-a2b59c4ee21b",
+      "name": "Edit Fields6",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1408,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8d192ed0-aebd-404e-8339-daab0d29651f",
+              "leftValue": "={{ $item(\"0\").$node[\"Já tem um evento\"].json[\"attendees\"][\"0\"][\"email\"] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "aca2d0f6-b9ee-4072-b0ba-4120ddf2556e",
+      "name": "If5",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1168,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7f842ffa-cd8f-40ab-a0a7-40dc173357a7",
+              "name": "response",
+              "value": "Informe o usuário que o agendamento foi cancelado e que estará sempre à disposição para um novo agendamento.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "41a66dfe-3c80-4fef-9276-745eb0832fda",
+      "name": "Edit Fields7",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1632,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "04c6ca35-7572-4699-bcb7-bbf2f2a6e6a4",
+              "name": "response",
+              "value": "horário não disponível, peça outro horário",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "123a5755-40e1-40a0-ada4-5410fd511fc5",
+      "name": "Edit Fields9",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1936,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.evento }}",
+                    "rightValue": "agendamento",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "f5b06620-94a8-41c3-b06c-64a1c9306317"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "agendamento"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "7a57e8e8-5227-4cde-8d58-7b447cd55a17",
+                    "leftValue": "={{ $json.evento }}",
+                    "rightValue": "cancelamento",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "cancelamento"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "d788021f-29ab-41f2-b355-2b18963d30f2",
+                    "leftValue": "={{ $json.evento }}",
+                    "rightValue": "reagendamento",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "reagendamento"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "9fe78f3c-e37e-4408-b520-19e0f14e8824",
+                    "leftValue": "={{ $json.evento }}",
+                    "rightValue": "VerHorarios",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Ver Horarios"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4bbdfd47-1b66-4abf-9359-42ad6a8a197e",
+      "name": "Switch4",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        688,
+        624
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "be5649a9-7624-4621-bd2d-84c25577c0ce",
+              "leftValue": "={{ $json.available }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "0639b410-4dfa-484c-9ada-905dbff702dc",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1664,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "80f81b7f-a588-4135-bbeb-c6a5f9cd2231",
+              "name": "whatsapp_lead",
+              "value": "={{ $json.whatsapp_lead }}",
+              "type": "string"
+            },
+            {
+              "id": "1fdd5696-40e0-4e48-96a0-51e6740a8688",
+              "name": "evento",
+              "value": "={{ $json.evento }}",
+              "type": "string"
+            },
+            {
+              "id": "155a68cc-7838-4753-b1a2-96841890c149",
+              "name": "inicio_reuniao",
+              "value": "={{ $json.inicio_reuniao }}",
+              "type": "string"
+            },
+            {
+              "id": "88453109-556e-4682-8dd6-a007faef0f85",
+              "name": "final_reuniao",
+              "value": "={{ $json.final_reuniao }}",
+              "type": "string"
+            },
+            {
+              "id": "3b3e2717-3de9-4731-94c2-2a4e617d75a2",
+              "name": "tipo_consulta",
+              "value": "={{ $json.tipo_consulta }}",
+              "type": "string"
+            },
+            {
+              "id": "c9886780-4afa-4bab-9b9b-0420ae8e9c5c",
+              "name": "assunto",
+              "value": "={{ $json.assunto }}",
+              "type": "string"
+            },
+            {
+              "id": "940d0d3c-0858-422e-be65-b81d69f9373e",
+              "name": "id_agendamento",
+              "value": "={{ $json.id_agendamento }}",
+              "type": "string"
+            },
+            {
+              "id": "a1047306-4df1-4dd7-967b-0889af97095b",
+              "name": "nome_lead",
+              "value": "={{ $json.nome_lead }}",
+              "type": "string"
+            },
+            {
+              "id": "49a3f631-bf1c-4004-ada4-be8d6a03b73c",
+              "name": "url_chatwoot",
+              "value": "={{ $json.url_chatwoot }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        448,
+        656
+      ],
+      "id": "077288a4-e690-45eb-9f8d-5ac79e2d34d9",
+      "name": "setarInformacoes"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7f842ffa-cd8f-40ab-a0a7-40dc173357a7",
+              "name": "response",
+              "value": "=Reunião foi reagendada com sucesso!",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0ec343b1-380a-40f0-971d-efca4cb61ab8",
+      "name": "Edit Fields2",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2320,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"timezone\": \"America/Sao_Paulo\",\n  \"timeBetweenMeetingsMinutes \": 60,\n  \"schedule\": [\n    {\n      \"day\": \"SEG\",\n      \"available\": true,\n      \"hours\": { \"after\": \"09:00\", \"before\": \"18:00\" }\n    },\n    {\n      \"day\": \"TER\",\n      \"available\": true,\n      \"hours\": { \"after\": \"09:00\", \"before\": \"18:00\" }\n    },\n    {\n      \"day\": \"QUA\",\n      \"available\": true,\n      \"hours\": { \"after\": \"09:00\", \"before\": \"18:00\" }\n    },\n    {\n      \"day\": \"QUI\",\n      \"available\": true,\n      \"hours\": { \"after\": \"09:00\", \"before\": \"18:00\" }\n    },\n    {\n      \"day\": \"SEX\",\n      \"available\": true,\n      \"hours\": { \"after\": \"09:00\", \"before\": \"18:00\" }\n    },\n    {\n      \"day\": \"SAB\",\n      \"available\": false,\n      \"hours\": { \"after\": \"09:00\", \"before\": \"15:00\" }\n    },\n    {\n      \"day\": \"DOM\",\n      \"available\": false,\n      \"hours\": { \"after\": \"\", \"before\": \"\" }\n    }\n  ]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        864,
+        1232
+      ],
+      "id": "6e11f8e7-9014-417f-8d54-b7034593030a",
+      "name": "definir agenda"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "advogadosistema26@gmail.com",
+          "mode": "list",
+          "cachedResultName": "advogadosistema26@gmail.com"
+        },
+        "returnAll": true,
+        "timeMax": "={{ $now.plus({ week: 3 }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        1200,
+        1232
+      ],
+      "id": "476b0769-767c-44af-9fd6-2b2a4d3e958a",
+      "name": "buscar eventos já reistrados",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "cma6no9DRS2OEeJ2",
+          "name": "Google Calendar-Lembrete"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1408,
+        1232
+      ],
+      "id": "6ae193d2-c856-443d-b7cc-2ff45fb3ab58",
+      "name": "juntar eventos"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a366af35-ca99-40ab-bd55-e9304e117f80",
+              "name": "data",
+              "value": "={{ \n\n(() => {\n  const eventosAgendados = $json.data;\n  const disponibilidadeSemanal = $('definir agenda').first().json;\n\n  const intervaloSemanas = 12;\n  const intervaloMinutos = $('definir agenda').first().json['timeBetweenMeetingsMinutes ']; // Cuidado com o espaço no final!\n\n  const dayMap = {\n    0: \"DOM\", 1: \"SEG\", 2: \"TER\", 3: \"QUA\", 4: \"QUI\", 5: \"SEX\", 6: \"SAB\"\n  };\n\n  function getDateWithTime(date, timeStr) {\n    if (!timeStr) return null;\n    const [hour, minute] = timeStr.split(\":\").map(Number);\n    const newDate = new Date(date);\n    newDate.setHours(hour, minute, 0, 0);\n    return newDate;\n  }\n\n  function formatTime(date) {\n    const hours = date.getHours().toString().padStart(2, '0');\n    const minutes = date.getMinutes().toString().padStart(2, '0');\n    return `${hours}:${minutes}`;\n  }\n\n  function saoMesmoDia(data1, data2) {\n    return (\n      data1.getFullYear() === data2.getFullYear() &&\n      data1.getMonth() === data2.getMonth() &&\n      data1.getDate() === data2.getDate()\n    );\n  }\n\n  function gerarHorariosDisponiveis() {\n    const horariosDisponiveis = [];\n    const hoje = new Date();\n\n    // Verifica se existem eventos válidos\n    const eventosValidos = Array.isArray(eventosAgendados)\n      ? eventosAgendados.filter(e => e?.start?.dateTime && e?.end?.dateTime)\n      : [];\n\n    for (let i = 0; i < intervaloSemanas * 7; i++) {\n      const dataAtual = new Date(hoje);\n      dataAtual.setDate(hoje.getDate() + i);\n      dataAtual.setHours(0, 0, 0, 0);\n\n      const diaSemana = dayMap[dataAtual.getDay()];\n      const configDia = disponibilidadeSemanal.schedule.find(d => d.day === diaSemana);\n\n      if (!configDia || !configDia.available) continue;\n\n      const inicioJanela = getDateWithTime(dataAtual, configDia.hours.after);\n      const fimJanela = getDateWithTime(dataAtual, configDia.hours.before);\n      if (!inicioJanela || !fimJanela) continue;\n\n      const eventosDoDia = eventosValidos.filter(evento => {\n        const inicioEvento = new Date(evento.start.dateTime);\n        return saoMesmoDia(inicioEvento, dataAtual);\n      });\n\n      for (let slotInicio = new Date(inicioJanela); slotInicio < fimJanela; ) {\n        const slotFim = new Date(slotInicio.getTime() + intervaloMinutos * 60000);\n        if (slotFim > fimJanela) break;\n\n        let conflita = false;\n        if (eventosValidos.length > 0) {\n          conflita = eventosDoDia.some(evento => {\n            const inicioEvento = new Date(evento.start.dateTime);\n            const fimEvento = new Date(evento.end.dateTime);\n            return (slotInicio < fimEvento && slotFim > inicioEvento);\n          });\n        }\n\n        if (!conflita) {\n          horariosDisponiveis.push({\n            data: slotInicio.toISOString().split(\"T\")[0],\n            start: formatTime(slotInicio),\n            end: formatTime(slotFim)\n          });\n        }\n\n        slotInicio = new Date(slotFim);\n      }\n    }\n\n    return horariosDisponiveis;\n  }\n\n  try {\n    const resultado = gerarHorariosDisponiveis();\n    return JSON.stringify(resultado);\n  } catch (error) {\n    return JSON.stringify({ error: error.message, stack: error.stack });\n  }\n\n})()\n\n}}\n",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1680,
+        1232
+      ],
+      "id": "e3a3a3b8-0d1d-4b38-9ee1-63b34ac8135f",
+      "name": "definir disponibilidade"
+    },
+    {
+      "parameters": {
+        "content": "# Buscar Eventos já registrados",
+        "height": 360,
+        "width": 400
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1152,
+        1072
+      ],
+      "typeVersion": 1,
+      "id": "523838a3-de70-4fbd-8893-14a59ea89a8d",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "# Verifica os horarios disponíveis",
+        "height": 360,
+        "width": 340
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1584,
+        1072
+      ],
+      "typeVersion": 1,
+      "id": "baf8246e-223c-454b-9775-940665f0c37e",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Seleciona dias/horários e retorna tudo em uma string formatada",
+        "height": 360,
+        "width": 360
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1968,
+        1072
+      ],
+      "typeVersion": 1,
+      "id": "850d2d33-9103-48e3-b7f2-884795bf56c9",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ae0721c6-ba73-46a9-aefd-a131a3051254",
+              "name": "response",
+              "value": "={{ $json.disponibilidade }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2384,
+        1232
+      ],
+      "id": "f95ca1e2-b5de-4ef3-9197-3eb7b8d562a8",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Entrada: items[0].json.data = [{ data: \"YYYY-MM-DD\", start: \"HH:MM\" }, ...]\nconst inputData = items[0].json.data;\n\n// 1) Agrupar horários por dia\nconst agrupadoPorDia = {};\nfor (const slot of inputData) {\n  if (!agrupadoPorDia[slot.data]) {\n    agrupadoPorDia[slot.data] = [];\n  }\n  agrupadoPorDia[slot.data].push(slot.start);\n}\n\n// 2) Ordenar dias (YYYY-MM-DD já ordena corretamente como string)\nlet diasOrdenados = Object.keys(agrupadoPorDia).sort();\n\n// 2.1) Excluir a data de hoje\nconst hoje = new Date().toISOString().split(\"T\")[0]; // YYYY-MM-DD\ndiasOrdenados = diasOrdenados.filter(d => d !== hoje);\n\n// 3) Selecionar até 10 dias\nconst selecionados = [];\n\n// Função auxiliar para parse de HH:MM\nconst parseHM = (h) => {\n  const [hh, mm] = h.split(\":\").map(n => parseInt(n, 10));\n  return { hh, mm };\n};\n\nfor (const dia of diasOrdenados.slice(0, 10)) {\n  // Ordena todos os horários do dia (lexicográfico funciona para HH:MM)\n  const horariosOrdenados = agrupadoPorDia[dia].sort();\n\n  // 5) Selecionar horários por período\n  //    - Manhã: TODOS até meio-dia (inclui 12:00, mas NÃO 12:01+)\n  //    - Tarde: a partir das 13:00 (pega até 10 horários)\n  const manha = horariosOrdenados.filter(h => {\n    const { hh, mm } = parseHM(h);\n    return hh < 12 || (hh === 12 && mm === 0);\n  });\n\n  const tarde = horariosOrdenados\n    .filter(h => {\n      const { hh } = parseHM(h);\n      return hh >= 13;\n    })\n    .slice(0, 10); // até 10 horários da tarde\n\n  // Formata dd/mm às HH:MM\n  const escolhidosFormatados = [...manha, ...tarde].map(h => {\n    const [year, month, day] = dia.split(\"-\");\n    return `${day}/${month} às ${h}`;\n  });\n\n  selecionados.push(...escolhidosFormatados);\n}\n\n// 4) Juntar tudo em uma única string (ex.: \"15/09 às 09:00, 15/09 às 10:00, ...\")\nconst resultado = selecionados.join(\", \");\n\n// 5) Retorno no formato do n8n\nreturn [\n  {\n    json: {\n      disponibilidade: resultado\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2080,
+        1232
+      ],
+      "id": "2c3fd2f5-086c-42a0-a75c-630c83958e61",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "46b6b089-568c-4915-83fc-a18c8e581d96",
+              "name": "data_agendada",
+              "value": "={{ $json.start.dateTime }}",
+              "type": "string"
+            },
+            {
+              "id": "2bd0543a-fe5d-441c-b907-174439207bb7",
+              "name": "id_agendamento",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "e3ec8276-2871-4d23-91b5-e0cdc9b77e0c",
+              "name": "link_meet",
+              "value": "={{ $json.hangoutLink }}",
+              "type": "string"
+            },
+            {
+              "id": "ebd02732-7230-404f-a422-a21a2a875fbb",
+              "name": "data_formatada",
+              "value": "={{ DateTime.fromISO($json.start.dateTime).toFormat(\"dd/MM 'às' HH:mm\") }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2144,
+        320
+      ],
+      "id": "ab2aef4c-fe15-4ab1-9516-4c00f42a82b4",
+      "name": "setarInfo"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "whatsapp_lead"
+            },
+            {
+              "name": "evento"
+            },
+            {
+              "name": "inicio_reuniao"
+            },
+            {
+              "name": "final_reuniao"
+            },
+            {
+              "name": "tipo_consulta"
+            },
+            {
+              "name": "assunto"
+            },
+            {
+              "name": "id_agendamento"
+            },
+            {
+              "name": "nome_lead"
+            },
+            {
+              "name": "url_chatwoot"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        256,
+        656
+      ],
+      "id": "8c967321-2884-4119-a5d2-e5b2c69f5abb",
+      "name": "exec workflow"
+    },
+    {
+      "parameters": {
+        "content": "# Etiquetar a conversa como \"reuniao_marcada\"",
+        "height": 336,
+        "width": 464
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2800,
+        160
+      ],
+      "typeVersion": 1,
+      "id": "403d1d96-47f5-45b0-b999-4ae271136840",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "# Marcar data da consulta no banco de dados\n",
+        "height": 336,
+        "width": 432,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2304,
+        160
+      ],
+      "typeVersion": 1,
+      "id": "125efb83-1509-4a21-8cb6-b0dc5da85668",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "leads_adv",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "whatsapp_lead",
+              "condition": "eq",
+              "keyValue": "={{ $('setarInformacoes').item.json.whatsapp_lead }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "status",
+              "fieldValue": "consulta_agendada"
+            },
+            {
+              "fieldId": "data_agendamento",
+              "fieldValue": "={{ $json.data_agendada }}"
+            },
+            {
+              "fieldId": "id_agendamento",
+              "fieldValue": "={{ $json.id_agendamento }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2448,
+        320
+      ],
+      "id": "bb28c3e6-e172-44ae-a517-3f506e88fadd",
+      "name": "status_agendado",
+      "credentials": {
+        "supabaseApi": {
+          "id": "QyVmMAWVKLOdh0MW",
+          "name": "Supabase-sistema-advogado"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('setarInformacoes').item.json.url_chatwoot }}api/v1/accounts/{{ $json['id_conta_chatwoot'] }}/conversations/{{ $json['id_conversa_chatwoot'] }}/labels",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"labels\": [\n    \"reuniao_marcada\"\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2976,
+        320
+      ],
+      "id": "134d23d3-18c4-4c94-8141-fae073ccbfbf",
+      "name": "etiqueta_reuniao_marcada",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ORcXdpQUsAFVM0Vs",
+          "name": "chatwoot-sistema-advogado"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "leads_adv",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "whatsapp_lead",
+              "condition": "eq",
+              "keyValue": "={{ $('setarInformacoes').item.json.whatsapp_lead }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "data_agendamento",
+              "fieldValue": "={{ $json.start.dateTime }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2080,
+        880
+      ],
+      "id": "985c33ec-75a6-4dcd-845b-ba37d3548593",
+      "name": "atualizar_data",
+      "credentials": {
+        "supabaseApi": {
+          "id": "QyVmMAWVKLOdh0MW",
+          "name": "Supabase-sistema-advogado"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "leads_adv",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "whatsapp_lead",
+              "condition": "eq",
+              "keyValue": "={{ $('setarInformacoes').item.json.whatsapp_lead }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "data_agendamento",
+              "fieldValue": "={{ null }}"
+            },
+            {
+              "fieldId": "id_agendamento",
+              "fieldValue": "={{ null }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "perdido"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1408,
+        640
+      ],
+      "id": "109fcdf2-a5e5-48df-b173-40fdffba007b",
+      "name": "tirar_data_agendamento",
+      "credentials": {
+        "supabaseApi": {
+          "id": "QyVmMAWVKLOdh0MW",
+          "name": "Supabase-sistema-advogado"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Definir agenda\n## Esse node você precisa verificar se agenda esta correta",
+        "height": 352,
+        "width": 608,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        512,
+        1072
+      ],
+      "typeVersion": 1,
+      "id": "cdff8c67-2086-4f4b-b056-3270a81b02e4",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Disponibilidade": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Marca": {
+      "main": [
+        [
+          {
+            "node": "setarInfo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Já tem um evento": {
+      "main": [
+        [
+          {
+            "node": "If5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Calendar1": {
+      "main": [
+        [
+          {
+            "node": "tirar_data_agendamento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Calendar3": {
+      "main": [
+        [
+          {
+            "node": "atualizar_data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verifica evento": {
+      "main": [
+        [
+          {
+            "node": "Google Calendar1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verifica evento1": {
+      "main": [
+        [
+          {
+            "node": "Google Calendar3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If6": {
+      "main": [
+        [
+          {
+            "node": "Verifica evento1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Disponibilidade1": {
+      "main": [
+        [
+          {
+            "node": "If6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If5": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields6",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Disponibilidade",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch4": {
+      "main": [
+        [
+          {
+            "node": "Já tem um evento",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Verifica evento",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Disponibilidade1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "definir agenda",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Marca",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setarInformacoes": {
+      "main": [
+        [
+          {
+            "node": "Switch4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "definir agenda": {
+      "main": [
+        [
+          {
+            "node": "buscar eventos já reistrados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "buscar eventos já reistrados": {
+      "main": [
+        [
+          {
+            "node": "juntar eventos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "juntar eventos": {
+      "main": [
+        [
+          {
+            "node": "definir disponibilidade",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "definir disponibilidade": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setarInfo": {
+      "main": [
+        [
+          {
+            "node": "status_agendado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "exec workflow": {
+      "main": [
+        [
+          {
+            "node": "setarInformacoes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "status_agendado": {
+      "main": [
+        [
+          {
+            "node": "etiqueta_reuniao_marcada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "etiqueta_reuniao_marcada": {
+      "main": [
+        [
+          {
+            "node": "response1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "atualizar_data": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "tirar_data_agendamento": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "timezone": "America/Sao_Paulo",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "956f302a-2925-41ea-838f-9432d725a567",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8e15b4b139fc7de5826b5c0082e48be6d2a0a58f6c5ba1c90fe1a225d65da589"
+  },
+  "id": "oluMRxPHkIfIfIw9",
+  "tags": []
+}

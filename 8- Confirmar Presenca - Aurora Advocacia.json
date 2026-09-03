@@ -1,0 +1,275 @@
+{
+  "name": "8- Confirmar Presenca - Aurora Advocacia",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "whatsapp_lead"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        256
+      ],
+      "id": "079caef4-e9c7-4114-853e-041eaa05907e",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "leads_adv",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "whatsapp_lead",
+              "keyValue": "={{ $json.whatsapp_lead }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        208,
+        256
+      ],
+      "id": "061be8ef-d145-4618-9eaa-5c80a5385a1b",
+      "name": "puxar_lead",
+      "credentials": {
+        "supabaseApi": {
+          "id": "QyVmMAWVKLOdh0MW",
+          "name": "Supabase-sistema-advogado"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "agendamentos_adv",
+        "limit": 1,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "lead_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.id }}"
+            },
+            {
+              "keyName": "status",
+              "condition": "eq",
+              "keyValue": "agendado"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        416,
+        256
+      ],
+      "id": "0026813f-99ec-4580-b05c-5d37638a1453",
+      "name": "puxar_agendamento",
+      "credentials": {
+        "supabaseApi": {
+          "id": "QyVmMAWVKLOdh0MW",
+          "name": "Supabase-sistema-advogado"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "agendamentos_adv",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $json.id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "status",
+              "fieldValue": "confirmado"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        624,
+        256
+      ],
+      "id": "73783209-37b1-454c-b35b-2405b4850121",
+      "name": "atualizarAgendamento",
+      "credentials": {
+        "supabaseApi": {
+          "id": "QyVmMAWVKLOdh0MW",
+          "name": "Supabase-sistema-advogado"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "leads_adv",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "whatsapp_lead",
+              "condition": "eq",
+              "keyValue": "={{ $('puxar_lead').item.json.whatsapp_lead }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "status",
+              "fieldValue": "confirmado"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        832,
+        256
+      ],
+      "id": "b7cb1d3c-282f-44f9-beee-b6ea35515e24",
+      "name": "atualizarLead",
+      "credentials": {
+        "supabaseApi": {
+          "id": "QyVmMAWVKLOdh0MW",
+          "name": "Supabase-sistema-advogado"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f1a2b3c4-8006-4a1a-9a1a-000000008006",
+              "name": "response",
+              "value": "=Presença confirmada com sucesso para o agendamento de {{ $('puxar_agendamento').item.json.data_hora_inicio }}.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1040,
+        256
+      ],
+      "id": "800b2bd7-41f3-456b-a7a8-64600c41dcf6",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "content": "# CONFIRMAR PRESENCA\nChamado pelo agente 'Agendar' quando o lead confirma que vai comparecer a consulta ja marcada.\nAtualiza status para 'confirmado' em agendamentos_adv e leads_adv.\nNao mexe no Google Calendar - so os status no banco.",
+        "height": 200,
+        "width": 700,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "bf39787d-3280-4da0-ba39-d61030ea2b4f",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "puxar_lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "puxar_lead": {
+      "main": [
+        [
+          {
+            "node": "puxar_agendamento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "puxar_agendamento": {
+      "main": [
+        [
+          {
+            "node": "atualizarAgendamento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "atualizarAgendamento": {
+      "main": [
+        [
+          {
+            "node": "atualizarLead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "atualizarLead": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "timezone": "America/Sao_Paulo",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "20b0330f-8b0d-4598-bda1-16c5010ceac5",
+  "meta": {
+    "instanceId": "8e15b4b139fc7de5826b5c0082e48be6d2a0a58f6c5ba1c90fe1a225d65da589"
+  },
+  "id": "yMAQffwiIYCDAsus",
+  "tags": []
+}

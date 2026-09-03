@@ -1,0 +1,199 @@
+{
+  "name": "10- Marcar Perdido - Aurora Advocacia",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 8 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        256
+      ],
+      "id": "d7b8d222-9247-496a-9516-ef0df2a189a6",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "leads_adv",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "status",
+              "condition": "eq",
+              "keyValue": "follow_up"
+            },
+            {
+              "keyName": "ultima_mensagem",
+              "condition": "lte",
+              "keyValue": "={{ new Date(Date.now() - 5*24*60*60000).toISOString() }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        208,
+        256
+      ],
+      "id": "0d607f78-9cf8-4d4a-8198-f5283d0c8469",
+      "name": "PuxarLeadsInativos",
+      "credentials": {
+        "supabaseApi": {
+          "id": "QyVmMAWVKLOdh0MW",
+          "name": "Supabase-sistema-advogado"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e1a2b3c4-9303-4a1a-9a1a-000000009303",
+              "leftValue": "={{ $json.follow_up_3 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        256
+      ],
+      "id": "3426610e-19fd-409b-8e8b-0eeb07054d24",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "leads_adv",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $json.id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "status",
+              "fieldValue": "perdido"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        624,
+        256
+      ],
+      "id": "d17eb1c0-d456-4417-8fb2-e141aa1fcdf6",
+      "name": "marcarPerdido",
+      "credentials": {
+        "supabaseApi": {
+          "id": "QyVmMAWVKLOdh0MW",
+          "name": "Supabase-sistema-advogado"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# MARCAR PERDIDO\nRoda 1x por dia (08h). Busca leads em 'follow_up' com ultima_mensagem ha mais de 5 dias E que ja passaram pelo 3o follow-up (follow_up_3 preenchido).\nMarca status = 'perdido'. NAO envia nenhuma mensagem ao lead.\nPrazo de 5 dias e ajustavel no node PuxarLeadsInativos.",
+        "height": 220,
+        "width": 700,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "3becdfa8-9575-48b3-b44b-a22cd0ed0021",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "PuxarLeadsInativos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PuxarLeadsInativos": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "marcarPerdido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "timezone": "America/Sao_Paulo",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "4b51f54b-d5a8-4e7b-9514-55ed14288a16",
+  "meta": {
+    "instanceId": "8e15b4b139fc7de5826b5c0082e48be6d2a0a58f6c5ba1c90fe1a225d65da589"
+  },
+  "id": "rNtaOzJr8Hii6P8f",
+  "tags": []
+}

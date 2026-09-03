@@ -1,0 +1,306 @@
+{
+  "name": "2- sobreEscritorio - Escritorio de Advocacia",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "51bd4896-17e9-484b-b08a-b6854225ccb3",
+              "name": "response",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1184,
+        160
+      ],
+      "id": "c9e0a9df-160f-46ee-9b57-c3832715f987",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "content": "# SOBRE O ESCRITORIO\n",
+        "height": 600,
+        "width": 1484,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "fcf8712f-c7dd-408f-acda-0ef0d39a6455",
+      "name": "Sticky Note24"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "67752c6a-09ad-430f-a14a-e800543efc8b",
+              "name": "NomeLead",
+              "value": "=Nome do lead: {{ $('When Executed by Another Workflow').item.json.NomeLead }}",
+              "type": "string"
+            },
+            {
+              "id": "3058e999-b1bf-43f3-b95c-bf1d71157c51",
+              "name": "msgLead",
+              "value": "={{ $json.Duvida }}",
+              "type": "string"
+            },
+            {
+              "id": "c6e2e733-5bb4-4b3d-9a79-cf43a9e56458",
+              "name": "whatsapp-lead",
+              "value": "={{ $json[\"whatsapp-lead\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "de41c67a-c3a9-4667-a1b1-29a90cf54fb0",
+              "name": "proximosDias",
+              "value": "={{ $json.resultado }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        544,
+        160
+      ],
+      "id": "fe577b78-3c57-4c23-8acf-3cde84b9176e",
+      "name": "setarInfo5"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "NomeLead"
+            },
+            {
+              "name": "Duvida"
+            },
+            {
+              "name": "whatsapp-lead"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        128,
+        160
+      ],
+      "id": "c74b878b-cb50-405c-bec4-0ecab62ccb0c",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('setarInfo5').first().json['whatsapp-lead'] }}",
+        "contextWindowLength": 40
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        848,
+        368
+      ],
+      "id": "95b572ef-8bd4-43d9-8f19-f01eaf22d3ab",
+      "name": "Memoria 1",
+      "credentials": {
+        "postgres": {
+          "id": "TTRluU2TzYgiju3q",
+          "name": "Postgres-sistema-advogado"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const days = [\n  'domingo',\n  'segunda',\n  'terça',\n  'quarta',\n  'quinta',\n  'sexta',\n  'sábado'\n];\n\n// Usa o horário atual no fuso de São Paulo\nconst now = DateTime.now().setZone('America/Sao_Paulo');\n\n// Converte o número do dia do Luxon para o array:\n// Luxon: 1 = segunda ... 7 = domingo\n// Array:  0 = domingo ... 6 = sábado\nconst getDayName = (date) => {\n  return days[date.weekday % 7];\n};\n\nlet result =\n  `Hoje é ${getDayName(now)} ` +\n  `${now.toFormat('dd/MM/yy')} ` +\n  `às ${now.toFormat('HH:mm')}\\n`;\n\nfor (let i = 1; i <= 6; i++) {\n  const future = now.plus({ days: i });\n\n  let label = '';\n\n  if (i === 1) {\n    label =\n      `Amanhã é ${getDayName(future)} ` +\n      `${future.toFormat('dd/MM/yy')}`;\n\n  } else if (i === 2) {\n    label =\n      `Depois de amanhã é ${getDayName(future)} ` +\n      `${future.toFormat('dd/MM/yy')}`;\n\n  } else {\n    label =\n      `A próxima ${getDayName(future)} será dia ` +\n      `${future.toFormat('dd/MM/yy')}`;\n  }\n\n  result += `${label}\\n`;\n}\n\nreturn [\n  {\n    json: {\n      resultado: result.trim()\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        336,
+        160
+      ],
+      "id": "5f20c39f-512f-41c9-a275-5f98711291d6",
+      "name": "proximos_dias"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.msgLead }}\n\n{{ $json.NomeLead }}",
+        "options": {
+          "systemMessage": "=## IDENTIDADE E FUNÇÃO\nVocê é um **agente de apoio interno** que atua exclusivamente nos bastidores do escritório advocacia **Angélica Tabosa | Advocacia Previdenciária**.  \nSua função é responder apenas com as informações solicitadas pela secretária **Ana**, sem saudações, sem perguntas extras e sem oferecer agendamento.  \nSeja sempre **direto e objetivo**, retornando somente o dado solicitado.\n\n## SOBRE O ESCRITÓRIO\n-   **Nome do escritório:** Angélica Tabosa | Advocacia Previdenciária\n-   **Endereço:** R. 8, 140 A - Parque Dois Irmãos, Fortaleza - CE\n    > Sempre enviar também o link do Google Maps: https://maps.app.goo.gl/dnS7sGMmoAJMFA4i6\n-   **Instagram:** https://www.instagram.com/angelicatabosa.adv?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==\n    > Enviar somente o link se solicitado.\n-   **Horários de atendimento:**\n    -   Segunda a sexta (09h às 18h)\n    \n\n## REGRAS DE ATENDIMENTO\n- Nunca inventar informações que não estejam neste documento.\n- Responder **somente** o que for solicitado, sem acrescentar informações extras.\n- Nunca trazer **saudações, despedidas ou mensagens de acolhimento**.\n- Não fazer convites, não oferecer **agendamento, horários ou consultas** (isso é função da secretária).\n- **Nunca falar de valores de serviços.** Os valores só são definidos no momento da consulta (presencial ou online).\n- Caso o lead pergunte **especificamente** sobre o valor da consulta, informe que ela é **gratuita**.\n- Nunca ofereça essa informação de forma espontânea; só fale se o lead perguntar diretamente.\n- Para consultar os serviços prestados pelo escritório, consulte obrigatoriamente a tool `'servicos_tool'`.\n\n\n## SERVIÇOS DISPONÍVEIS\n-  Sempre que o lead perguntar sobre **quais serviços o escritório oferece** ou detalhes de algum serviço, é **obrigatório acionar a tool `servicos_tool`**.\n-  Essa tool deve ser acionada **todas as vezes**, mesmo que a pergunta já tenha sido feita anteriormente.\n- Nunca responda diretamente sobre serviços; a função é **sempre consultar a tool** e retornar o que ela informar.\n-  Se a informação não estiver disponível na tool, responda apenas: **“Serviço não disponível pelo escritório.”**\n\n## QUEBRA DE OBJEÇÕES\n\n**Função:**  \nEste tópico serve para orientar como agir quando o lead apresentar qualquer tipo de objeção — seja dúvida, resistência, insegurança ou recusa. O objetivo é conduzir a conversa de forma humana e estratégica, mostrando segurança e levando o lead ao próximo passo: a consulta com o advogado.\n\n**Instruções:**\n- Responder sempre de forma **calma, acolhedora e respeitosa**, nunca confrontando o lead.\n- Mostrar que a situação do lead é **compreensível** e que a equipe jurídica está preparada para orientar.\n- Reforçar que a **consulta com advogado especialista** é o momento certo para esclarecer dúvidas, avaliar documentos e indicar soluções.\n- Transmitir **segurança e autoridade**, destacando a importância de resolver cedo para evitar complicações maiores.\n- Manter tom **humano e persuasivo**, sempre redirecionando a conversa para o **agendamento da consulta** como passo natural.\n- Nunca desistir na primeira resistência; busque ajustar a resposta, mantendo o diálogo leve até superar a objeção.\n\n## DATA E HORA ATUALIZADOS\nPara efeito de contexto durante as suas conversas segue a data e hora de hoje e os próximos dias:\n{{ $json.proximosDias }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        784,
+        160
+      ],
+      "id": "f24675db-4b77-4edc-9483-f208284a2cbf",
+      "name": "Advocacia"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1IIfoN2bpGWxlRTZP_Ckznhvkbjd3sVFOI2nhR53AF7E",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 954556714,
+          "mode": "list",
+          "cachedResultName": "servicos_previdenciarios",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IIfoN2bpGWxlRTZP_Ckznhvkbjd3sVFOI2nhR53AF7E/edit#gid=954556714"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        1024,
+        368
+      ],
+      "id": "0d4f32f3-61ca-43aa-aead-7478ab879d20",
+      "name": "servicos_tool",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "WlhBmFnUOEtsya0p",
+          "name": "Sheets-curso-automacao"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        656,
+        368
+      ],
+      "id": "178c4bec-bf5d-405d-a54d-14e3627011d9",
+      "name": "2.5 flash",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "SgDNj9qOfHtuxYA1",
+          "name": "Gemini-curso-automacao"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "setarInfo5": {
+      "main": [
+        [
+          {
+            "node": "Advocacia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "proximos_dias",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memoria 1": {
+      "ai_memory": [
+        [
+          {
+            "node": "Advocacia",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "proximos_dias": {
+      "main": [
+        [
+          {
+            "node": "setarInfo5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Advocacia": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "servicos_tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Advocacia",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2.5 flash": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Advocacia",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "timezone": "America/Sao_Paulo",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "e6eab3ca-9a1a-4a76-8e50-e3876a91e467",
+  "meta": {
+    "instanceId": "8e15b4b139fc7de5826b5c0082e48be6d2a0a58f6c5ba1c90fe1a225d65da589"
+  },
+  "id": "Fn69gvUytEUamcRD",
+  "tags": []
+}

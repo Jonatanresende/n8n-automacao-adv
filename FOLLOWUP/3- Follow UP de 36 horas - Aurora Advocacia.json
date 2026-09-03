@@ -1,0 +1,836 @@
+{
+  "name": "3- Follow UP de 36 horas - Aurora Advocacia",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        912,
+        640
+      ],
+      "id": "c6a13ed3-033d-419e-84d9-8cbfe606b763",
+      "name": "OpenAI Chat Model3",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 */10 8-21 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2064,
+        416
+      ],
+      "id": "9e8932be-a59d-46b3-a9f4-50f46e186c07",
+      "name": "Schedule Trigger1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryManager",
+      "typeVersion": 1.1,
+      "position": [
+        704,
+        400
+      ],
+      "id": "14e991b5-4094-43d0-8421-b89f2c14b580",
+      "name": "Chat Memory Manager"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        400,
+        384
+      ],
+      "id": "fbe02729-3467-439f-bb00-1091434c7798",
+      "name": "Loop"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('setarInformacoes').item.json.url_chatwoot }}api/v1/accounts/{{ $('setarInformacoes').item.json.id_conta_chatwoot }}/conversations/{{ $('setarInformacoes').item.json.id_conversa_chatwoot }}/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "content",
+              "value": "={{ $json.output }}"
+            },
+            {
+              "name": "message_type",
+              "value": "outgoing"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1472,
+        400
+      ],
+      "id": "d7e2703e-438f-4ee1-b2ca-81679b91e65b",
+      "name": "enviarMsgLead",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ORcXdpQUsAFVM0Vs",
+          "name": "chatwoot-sistema-advogado"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1984,
+        400
+      ],
+      "id": "f51f73ae-9a02-4f03-b531-5e07f11b08b4",
+      "name": "Wait",
+      "webhookId": "b6f37c6e-976c-467d-be46-f84c38c324fa"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('setarInformacoes').item.json.whatsapp_lead }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        704,
+        640
+      ],
+      "id": "28474c29-9e89-4882-bb7c-3e5ff017ce75",
+      "name": "memoriaLead",
+      "credentials": {
+        "postgres": {
+          "id": "TTRluU2TzYgiju3q",
+          "name": "Postgres-sistema-advogado"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "d57e2c51-88bf-4a96-a7dd-f2e0ef7fee4c",
+                    "leftValue": "={{ $('PuxarDadosLead').item.json.id_conta_chatwoot }}",
+                    "rightValue": "null",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "PROSSEGUIR"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('PuxarDadosLead').item.json.id_conta_chatwoot }}",
+                    "rightValue": "null",
+                    "operator": {
+                      "type": "string",
+                      "operation": "empty",
+                      "singleValue": true
+                    },
+                    "id": "3bc09cc4-2b65-4bb4-88a9-032b121cf0a3"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "não prosseguir"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -560,
+        352
+      ],
+      "id": "5c517d67-dffc-48cc-891a-a4b606d75f9c",
+      "name": "verificarChatWoot"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -272,
+        512
+      ],
+      "id": "37128e7a-16a8-4b71-8cd5-7d47c23f5c7f",
+      "name": "não fazer nada"
+    },
+    {
+      "parameters": {
+        "content": "# Aciona a cada 1 hora",
+        "height": 480,
+        "width": 340,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2176,
+        192
+      ],
+      "typeVersion": 1,
+      "id": "95e6b7b1-b362-441b-829a-bff244459e35",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "99f23408-3488-4b8d-811f-c5d2c0734591",
+              "name": "whatsapp_lead",
+              "value": "={{ $('PuxarDadosLead').item.json.whatsapp_lead }}",
+              "type": "string"
+            },
+            {
+              "id": "9d7b9cd7-ab8e-4959-bc1d-fbacb9db870e",
+              "name": "id_conta_chatwoot",
+              "value": "={{ $('PuxarDadosLead').item.json.id_conta_chatwoot }}",
+              "type": "string"
+            },
+            {
+              "id": "bb450359-5e52-4041-9307-68ca0a8e9de7",
+              "name": "id_conversa_chatwoot",
+              "value": "={{ $('PuxarDadosLead').item.json.id_conversa_chatwoot }}",
+              "type": "string"
+            },
+            {
+              "id": "bf9d30c9-e9c6-4e64-ab4b-53de229dcaee",
+              "name": "id_lead_chatwoot",
+              "value": "={{ $('PuxarDadosLead').item.json.id_lead_chatwoot }}",
+              "type": "string"
+            },
+            {
+              "id": "ca04c0d1-c42b-40a4-a7ae-35a28dc3990a",
+              "name": "inbox_id_chatwoot",
+              "value": "={{ $('PuxarDadosLead').item.json.inbox_id_chatwoot }}",
+              "type": "string"
+            },
+            {
+              "id": "727bf695-eace-44ab-ba77-d7fb9e441af2",
+              "name": "url_chatwoot",
+              "value": "https://dreamingboxjellyfish-chatwoot.cloudfy.live/",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        80,
+        384
+      ],
+      "id": "1cd44d80-eb58-4bf8-8649-035d89ec8507",
+      "name": "setarInformacoes"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "leads_adv",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "ultima_mensagem",
+              "condition": "lte",
+              "keyValue": "={{ new Date(Date.now() - 2160*60000).toISOString() }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -1696,
+        416
+      ],
+      "id": "e8c0ae9c-a458-4740-8fe4-b42562c37c75",
+      "name": "PuxarDadosLead",
+      "alwaysOutputData": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "QyVmMAWVKLOdh0MW",
+          "name": "Supabase-sistema-advogado"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8d68f79e-5b79-4cb3-b19d-0accbd6cd8ad",
+              "leftValue": "={{ $('PuxarDadosLead').item.json.status }}",
+              "rightValue": "consulta_agendada",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "b7f07f4b-6c3b-4167-ac3a-1f5978a865b3",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "compareceu",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "9e3b1934-f105-43db-a1a4-a19be37b5617",
+              "leftValue": "={{ $('PuxarDadosLead').item.json.status }}",
+              "rightValue": "fechado",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "1bbf825b-41e8-4f7c-a2cb-2fe0d8a66d77",
+              "leftValue": "={{ $('PuxarDadosLead').item.json.status }}",
+              "rightValue": "perdido",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "40b95792-5ddd-421b-b8e1-3b7f11132c66",
+              "leftValue": "={{ $('PuxarDadosLead').item.json.status }}",
+              "rightValue": "confirmado",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -1328,
+        480
+      ],
+      "id": "f8691378-4605-4f07-af8b-afcadf8bb9e1",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8d308b9b-1224-42c2-87b0-89b46e273350",
+              "leftValue": "={{ $('PuxarDadosLead').item.json.follow_up_1 }}",
+              "rightValue": "Pendente",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "133db63b-06c2-4f8c-825b-c3a6ea3ea52e",
+              "leftValue": "={{ $('PuxarDadosLead').item.json.follow_up_3 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -976,
+        480
+      ],
+      "id": "f605ec01-15d6-44b5-89f8-aadf5e6096e9",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "content": "# Puxa todos os leads da tabela",
+        "height": 480,
+        "width": 300,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1808,
+        192
+      ],
+      "typeVersion": 1,
+      "id": "695d5f03-0288-419f-a343-192cbf999be3",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "content": "# Verifica o status do lead. Não pode ser quem já esta agendado",
+        "height": 480,
+        "width": 400,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1472,
+        192
+      ],
+      "typeVersion": 1,
+      "id": "35e08482-fb9c-4967-8151-536a59622603",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "# Verifica se o \"Follow UP 1\" não foi realizado",
+        "height": 480,
+        "width": 400,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1056,
+        192
+      ],
+      "typeVersion": 1,
+      "id": "ca49a536-32d7-4e16-a97d-b783e6698631",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Verifica se o ID da conversa existe para enviar pelo Chatwoot",
+        "height": 480,
+        "width": 580
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -640,
+        192
+      ],
+      "typeVersion": 1,
+      "id": "6887888f-47cb-48c6-9eca-fdc1d101c4d8",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "# Setar informações",
+        "height": 480,
+        "width": 320,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -32,
+        192
+      ],
+      "typeVersion": 1,
+      "id": "c82aad95-0a3c-4da4-970d-30cf963386be",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 608,
+        "width": 1892,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        320,
+        192
+      ],
+      "typeVersion": 1,
+      "id": "c7a95a3b-c176-4354-951e-9230f7bde9e0",
+      "name": "Sticky Note58"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('setarInformacoes').item.json.whatsapp_lead }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        1280,
+        656
+      ],
+      "id": "64bc4cfc-fb76-422e-b504-1a7f492842a1",
+      "name": "memoriaLead1",
+      "credentials": {
+        "postgres": {
+          "id": "TTRluU2TzYgiju3q",
+          "name": "Postgres-sistema-advogado"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "leads_adv",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "whatsapp_lead",
+              "condition": "eq",
+              "keyValue": "={{ $('setarInformacoes').item.json.whatsapp_lead }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "follow_up_3",
+              "fieldValue": "={{ $now }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "follow_up"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1744,
+        400
+      ],
+      "id": "d7a676ed-e05c-4b0f-aee3-aa959d65f408",
+      "name": "marcar_follow_up",
+      "alwaysOutputData": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "QyVmMAWVKLOdh0MW",
+          "name": "Supabase-sistema-advogado"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Atenção:\n## Inserir a URL do seu Chatwoot nesse node",
+        "height": 192,
+        "width": 256,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "ce5f6b7e-872d-46b2-b05a-153324a722a3",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Histórico de conversa: {{ JSON.stringify($json.messages, null, 2) }}",
+        "options": {
+          "systemMessage": "=## IDENTIDADE\n\nVocê é **Ana**, secretária da Angélica Tabosa | Advocacia Previdenciária.  \nVocê é especialista em follow-up natural e leve para retomar conversas no WhatsApp.\n\n## FUNÇÃO\n\n-   Ler as últimas mensagens trocadas entre você e o cliente.\n-   Entender em que ponto a conversa parou.\n-   Criar **uma mensagem única, humanizada e natural** para retomar o diálogo.\n-   Estimular o cliente a responder sem pressão.\n\n## REGRAS DE MENSAGEM\n\n-   Nunca se apresente, nunca peça nome ou dados já informados.\n-   Seja breve, como uma conversa normal no WhatsApp.\n-   Use o nome do cliente, se estiver disponível.\n-   Não pressione, não cobre retorno e não mencione tempo de ausência.\n-   Nunca repita a última pergunta ou informação enviada.\n- Se a última mensagem da conversa foi enviada por você (Ana) e o lead ainda não respondeu nada, NUNCA presuma ou invente uma resposta, decisão ou informação que o lead não deu (ex: nunca diga \"que bom que você tem os documentos\" se ele não disse isso). Nesse caso, apenas retome de forma neutra, perguntando se ele viu a mensagem anterior ou se ficou alguma dúvida — sem repetir a pergunta original e sem assumir qualquer resposta a ela.\n-   Se a sua última mensagem tinha link, instrução ou orientação jurídica, não repita.\n-   Retome o assunto de forma simpática e profissional, com naturalidade.\n-   Emojis só se fizer sentido e sempre de maneira moderada.\n-   Passe segurança e disponibilidade para ajudar.\n-   Data e hora de agora: {{ $now }}\n\n## EXEMPLOS DE MENSAGENS\nExemplo 1:\n\"Oi! Você chegou a ver minha última mensagem?\"\n\nExemplo 2:\n\"Ficou alguma dúvida que eu possa esclarecer pra você?\"\n\nExemplo 3:\n\"Oi! Você chegou a ver minha última mensagem?\"\n\nExemplo 4:\n\"Olá, esta ai ainda?\"\n\nExemplo 5:\n\"Oi! Você chegou a ver minha última mensagem?\"\n\nExemplo 6:\n\"Olá, chegou a ver o que te mandei?\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        1120,
+        400
+      ],
+      "id": "28a8cd1a-3d72-4cdd-a7ac-6bb9c042743f",
+      "name": "Follow UP 3"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        1040,
+        656
+      ],
+      "id": "12c211d2-ddcb-47df-a1f8-215c4c066fdc",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "SgDNj9qOfHtuxYA1",
+          "name": "Gemini-curso-automacao"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "PuxarDadosLead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Memory Manager": {
+      "main": [
+        [
+          {
+            "node": "Follow UP 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Chat Memory Manager",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "enviarMsgLead": {
+      "main": [
+        [
+          {
+            "node": "marcar_follow_up",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "memoriaLead": {
+      "ai_memory": [
+        [
+          {
+            "node": "Chat Memory Manager",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "verificarChatWoot": {
+      "main": [
+        [
+          {
+            "node": "setarInformacoes",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "não fazer nada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setarInformacoes": {
+      "main": [
+        [
+          {
+            "node": "Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PuxarDadosLead": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "verificarChatWoot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "memoriaLead1": {
+      "ai_memory": [
+        [
+          {
+            "node": "Follow UP 3",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "marcar_follow_up": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Follow UP 3": {
+      "main": [
+        [
+          {
+            "node": "enviarMsgLead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Follow UP 3",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "timezone": "America/Sao_Paulo",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "805cc8ab-bb6b-4903-82e5-ec65bba8c644",
+  "meta": {
+    "instanceId": "8e15b4b139fc7de5826b5c0082e48be6d2a0a58f6c5ba1c90fe1a225d65da589"
+  },
+  "id": "J1xKi31olue1d7qR",
+  "tags": []
+}
