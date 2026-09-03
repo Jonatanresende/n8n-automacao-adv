@@ -129,7 +129,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const days = [\n  'domingo',\n  'segunda',\n  'terça',\n  'quarta',\n  'quinta',\n  'sexta',\n  'sábado'\n];\n\n// Usa o horário atual no fuso de São Paulo\nconst now = DateTime.now().setZone('America/Sao_Paulo');\n\n// Converte o número do dia do Luxon para o array:\n// Luxon: 1 = segunda ... 7 = domingo\n// Array:  0 = domingo ... 6 = sábado\nconst getDayName = (date) => {\n  return days[date.weekday % 7];\n};\n\nlet result =\n  `Hoje é ${getDayName(now)} ` +\n  `${now.toFormat('dd/MM/yy')} ` +\n  `às ${now.toFormat('HH:mm')}\\n`;\n\nfor (let i = 1; i <= 6; i++) {\n  const future = now.plus({ days: i });\n\n  let label = '';\n\n  if (i === 1) {\n    label =\n      `Amanhã é ${getDayName(future)} ` +\n      `${future.toFormat('dd/MM/yy')}`;\n\n  } else if (i === 2) {\n    label =\n      `Depois de amanhã é ${getDayName(future)} ` +\n      `${future.toFormat('dd/MM/yy')}`;\n\n  } else {\n    label =\n      `A próxima ${getDayName(future)} será dia ` +\n      `${future.toFormat('dd/MM/yy')}`;\n  }\n\n  result += `${label}\\n`;\n}\n\nreturn [\n  {\n    json: {\n      resultado: result.trim()\n    }\n  }\n];"
+        "jsCode": "const days = [\n  'domingo',\n  'segunda',\n  'terça',\n  'quarta',\n  'quinta',\n  'sexta',\n  'sábado'\n];\n\n// Usa o horário atual no fuso de São Paulo\nconst now = DateTime.now().setZone('America/Sao_Paulo');\n\n// Converte o número do dia do Luxon para o array:\n// Luxon: 1 = segunda ... 7 = domingo\n// Array:  0 = domingo ... 6 = sábado\nconst getDayName = (date) => {\n  return days[date.weekday % 7];\n};\n\nlet result =\n  `Hoje é ${getDayName(now)} ` +\n  `${now.toFormat('dd/MM/yy')} ` +\n  `às ${now.toFormat('HH:mm')}\\n`;\n\nfor (let i = 1; i <= 6; i++) {\n  const future = now.plus({ days: i });\n\n  let label = '';\n\n  if (i === 1) {\n    label =\n      `Amanhã é ${getDayName(future)} ` +\n      `${future.toFormat('dd/MM/yy')}`;\n\n  } else if (i === 2) {\n    label =\n      `Depois de amanhã é ${getDayName(future)} ` +\n      `${future.toFormat('dd/MM/yy')}`;\n\n  } else {\n    label =\n      `A próxima ${getDayName(future)} será dia ` +\n      `${future.toFormat('dd/MM/yy')}`;\n  }\n\n  result += `${label}\\n`;\n}\n\nreturn [\n  {\n    json: {\n      ...$input.item.json,\n      resultado: result.trim()\n    }\n  }\n];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -297,7 +297,7 @@
     "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": false
   },
-  "versionId": "e6eab3ca-9a1a-4a76-8e50-e3876a91e467",
+  "versionId": "812ba5f6-64f4-4d00-866f-ad746ce9dc79",
   "meta": {
     "instanceId": "8e15b4b139fc7de5826b5c0082e48be6d2a0a58f6c5ba1c90fe1a225d65da589"
   },

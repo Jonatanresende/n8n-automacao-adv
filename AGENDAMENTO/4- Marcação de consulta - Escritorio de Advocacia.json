@@ -8,7 +8,7 @@
             {
               "id": "86ff282a-3ede-4417-98c1-0d10858bc5dc",
               "name": "response",
-              "value": "=Agendamento concluído para o dia: {{ $('setarInfo').item.json.data_formatada }}",
+              "value": "=Agendamento concluído para o dia: {{ $('setarInfo').item.json.data_formatada }}{{ $('setarInformacoes').item.json.tipo_consulta === 'presencial' ? '. Endereço do escritório: R. 8, 140 A - Parque Dois Irmãos, Fortaleza - CE. Google Maps: https://maps.app.goo.gl/dnS7sGMmoAJMFA4i6' : '' }}",
               "type": "string"
             }
           ]
@@ -640,7 +640,7 @@
             {
               "id": "7f842ffa-cd8f-40ab-a0a7-40dc173357a7",
               "name": "response",
-              "value": "=Reunião foi reagendada com sucesso!",
+              "value": "=Reunião foi reagendada com sucesso!{{ $('setarInformacoes').item.json.tipo_consulta === 'presencial' ? '. Endereço do escritório: R. 8, 140 A - Parque Dois Irmãos, Fortaleza - CE. Google Maps: https://maps.app.goo.gl/dnS7sGMmoAJMFA4i6' : '' }}",
               "type": "string"
             }
           ]
@@ -1109,7 +1109,26 @@
       "name": "Sticky Note"
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "exec workflow": [
+      {
+        "json": {
+          "whatsapp_lead": "558594517619",
+          "evento": "reagendamento",
+          "inicio_reuniao": "2026-09-08T09:00:00",
+          "final_reuniao": "2026-09-08T09:30:00",
+          "tipo_consulta": "presencial",
+          "assunto": "Consulta presencial sobre auxílio-acidente",
+          "id_agendamento": "g3fb1hsh8r1bo31m21kckucp64",
+          "nome_lead": null,
+          "url_chatwoot": null
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
   "connections": {
     "Disponibilidade": {
       "main": [
@@ -1427,7 +1446,7 @@
     "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": false
   },
-  "versionId": "956f302a-2925-41ea-838f-9432d725a567",
+  "versionId": "332c8f72-3103-4c3e-972b-5516010ec4ad",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "8e15b4b139fc7de5826b5c0082e48be6d2a0a58f6c5ba1c90fe1a225d65da589"
