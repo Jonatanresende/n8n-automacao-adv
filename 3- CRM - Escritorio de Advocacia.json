@@ -231,15 +231,15 @@
           "fieldValues": [
             {
               "fieldId": "nome_lead",
-              "fieldValue": "={{ $json.output.nome }}"
+              "fieldValue": "={{ $json.output?.nome || '' }}"
             },
             {
               "fieldId": "resumo_conversa",
-              "fieldValue": "={{ $json.output.resumo_conversa }}"
+              "fieldValue": "={{ $json.output?.resumo_conversa || '' }}"
             },
             {
               "fieldId": "motivo_contato",
-              "fieldValue": "={{ $json.output.motivo_contato }}"
+              "fieldValue": "={{ $json.output?.motivo_contato || '' }}"
             }
           ]
         }
@@ -591,6 +591,39 @@
           "name": "Gemini-curso-automacao"
         }
       }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "63957d5a-86d4-4095-881b-f7cb3627d4bb",
+              "leftValue": "={{ $json.messages.length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3264,
+        160
+      ],
+      "id": "a403e16a-b7ea-4723-a828-eaf57cd4bdc4",
+      "name": "If"
     }
   ],
   "pinData": {},
@@ -610,7 +643,7 @@
       "main": [
         [
           {
-            "node": "CRM",
+            "node": "If",
             "type": "main",
             "index": 0
           }
@@ -738,6 +771,24 @@
           }
         ]
       ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "CRM",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "atualizarCRM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -749,7 +800,7 @@
     "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": false
   },
-  "versionId": "1249a4b7-5fd0-43e5-b471-97a8d4565407",
+  "versionId": "b46ea08d-74b2-468c-97a1-dfdabc1b5637",
   "meta": {
     "instanceId": "8e15b4b139fc7de5826b5c0082e48be6d2a0a58f6c5ba1c90fe1a225d65da589"
   },
