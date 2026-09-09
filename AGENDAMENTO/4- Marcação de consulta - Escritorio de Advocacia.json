@@ -45,9 +45,9 @@
         "resource": "calendar",
         "calendar": {
           "__rl": true,
-          "value": "advogadosistema26@gmail.com",
+          "value": "angelicatab@hotmail.com",
           "mode": "list",
-          "cachedResultName": "advogadosistema26@gmail.com"
+          "cachedResultName": "angelicatab@hotmail.com"
         },
         "timeMin": "={{ $('setarInformacoes').item.json.inicio_reuniao }}",
         "timeMax": "={{ $('setarInformacoes').item.json.final_reuniao }}",
@@ -72,9 +72,9 @@
       "parameters": {
         "calendar": {
           "__rl": true,
-          "value": "advogadosistema26@gmail.com",
+          "value": "angelicatab@hotmail.com",
           "mode": "list",
-          "cachedResultName": "advogadosistema26@gmail.com"
+          "cachedResultName": "angelicatab@hotmail.com"
         },
         "start": "={{ $('setarInformacoes').item.json.inicio_reuniao }}",
         "end": "={{ $('setarInformacoes').item.json.final_reuniao }}",
@@ -107,9 +107,9 @@
         "operation": "getAll",
         "calendar": {
           "__rl": true,
-          "value": "advogadosistema26@gmail.com",
+          "value": "angelicatab@hotmail.com",
           "mode": "list",
-          "cachedResultName": "advogadosistema26@gmail.com"
+          "cachedResultName": "angelicatab@hotmail.com"
         },
         "limit": 1,
         "options": {}
@@ -135,9 +135,9 @@
         "operation": "delete",
         "calendar": {
           "__rl": true,
-          "value": "advogadosistema26@gmail.com",
+          "value": "angelicatab@hotmail.com",
           "mode": "list",
-          "cachedResultName": "advogadosistema26@gmail.com"
+          "cachedResultName": "angelicatab@hotmail.com"
         },
         "eventId": "={{ $('Verifica evento').item.json.id }}",
         "options": {}
@@ -162,9 +162,9 @@
         "operation": "update",
         "calendar": {
           "__rl": true,
-          "value": "advogadosistema26@gmail.com",
+          "value": "angelicatab@hotmail.com",
           "mode": "list",
-          "cachedResultName": "advogadosistema26@gmail.com"
+          "cachedResultName": "angelicatab@hotmail.com"
         },
         "eventId": "={{ $('setarInformacoes').item.json.id_agendamento }}",
         "useDefaultReminders": false,
@@ -194,9 +194,9 @@
         "operation": "getAll",
         "calendar": {
           "__rl": true,
-          "value": "advogadosistema26@gmail.com",
+          "value": "angelicatab@hotmail.com",
           "mode": "list",
-          "cachedResultName": "advogadosistema26@gmail.com"
+          "cachedResultName": "angelicatab@hotmail.com"
         },
         "returnAll": true,
         "options": {
@@ -223,9 +223,9 @@
         "operation": "getAll",
         "calendar": {
           "__rl": true,
-          "value": "advogadosistema26@gmail.com",
+          "value": "angelicatab@hotmail.com",
           "mode": "list",
-          "cachedResultName": "advogadosistema26@gmail.com"
+          "cachedResultName": "angelicatab@hotmail.com"
         },
         "returnAll": true,
         "options": {
@@ -286,9 +286,9 @@
         "resource": "calendar",
         "calendar": {
           "__rl": true,
-          "value": "advogadosistema26@gmail.com",
+          "value": "angelicatab@hotmail.com",
           "mode": "list",
-          "cachedResultName": "advogadosistema26@gmail.com"
+          "cachedResultName": "angelicatab@hotmail.com"
         },
         "timeMin": "={{ $json.inicio_reuniao }}",
         "timeMax": "={{ $json.final_reuniao }}",
@@ -676,9 +676,9 @@
         "operation": "getAll",
         "calendar": {
           "__rl": true,
-          "value": "advogadosistema26@gmail.com",
+          "value": "angelicatab@hotmail.com",
           "mode": "list",
-          "cachedResultName": "advogadosistema26@gmail.com"
+          "cachedResultName": "angelicatab@hotmail.com"
         },
         "returnAll": true,
         "timeMax": "={{ $now.plus({ week: 3 }) }}",
@@ -1446,7 +1446,7 @@
     "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": false
   },
-  "versionId": "332c8f72-3103-4c3e-972b-5516010ec4ad",
+  "versionId": "0b4b445a-6a55-4da2-bc9f-e7aaa5b8aab9",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "8e15b4b139fc7de5826b5c0082e48be6d2a0a58f6c5ba1c90fe1a225d65da589"

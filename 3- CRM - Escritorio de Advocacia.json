@@ -98,6 +98,14 @@
             {
               "fieldId": "follow_up_3",
               "fieldValue": "={{ null }}"
+            },
+            {
+              "fieldId": "id_conversa_chatwoot",
+              "fieldValue": "={{ $('setar_informacoes').item.json.id_conversa_chatwoot }}"
+            },
+            {
+              "fieldId": "inbox_id_chatwoot",
+              "fieldValue": "={{ $('setar_informacoes').item.json.inbox_id_chatwoot }}"
             }
           ]
         }
@@ -800,7 +808,7 @@
     "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": false
   },
-  "versionId": "b46ea08d-74b2-468c-97a1-dfdabc1b5637",
+  "versionId": "588614c7-e622-42a8-99f6-133a9d41e0ff",
   "meta": {
     "instanceId": "8e15b4b139fc7de5826b5c0082e48be6d2a0a58f6c5ba1c90fe1a225d65da589"
   },
