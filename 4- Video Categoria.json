@@ -19,6 +19,9 @@
             },
             {
               "name": "url_chatwoot"
+            },
+            {
+              "name": "id_Lead_chatwoot"
             }
           ]
         }
@@ -305,7 +308,9 @@
             "whatsapp_lead": "={{ $('When Executed by Another Workflow').first().json.whatsapp_lead }}",
             "categoria_video_enviado": "={{ $('bateuGatilho?').item.json.categoria }}",
             "id_conta_chatwoot": "={{ $('When Executed by Another Workflow').first().json.id_conta_chatwoot }}",
-            "id_conversa_chatwoot": "={{ $('When Executed by Another Workflow').first().json.id_conversa_chatwoot }}"
+            "id_conversa_chatwoot": "={{ $('When Executed by Another Workflow').first().json.id_conversa_chatwoot }}",
+            "id_lead_chatwoot": "={{ $('When Executed by Another Workflow').first().json.id_Lead_chatwoot }}",
+            "inicio_atendimento": "={{ $now }}"
           },
           "matchingColumns": [
             "whatsapp_lead"
@@ -413,7 +418,7 @@
               "display": true,
               "type": "dateTime",
               "canBeUsedToMatch": false,
-              "removed": true
+              "removed": false
             },
             {
               "id": "ultima_mensagem",
@@ -453,7 +458,7 @@
               "display": true,
               "type": "string",
               "canBeUsedToMatch": false,
-              "removed": true
+              "removed": false
             },
             {
               "id": "inbox_id_chatwoot",
@@ -716,6 +721,16 @@
               "type": "string",
               "canBeUsedToMatch": false,
               "removed": true
+            },
+            {
+              "id": "visto_em",
+              "displayName": "visto_em",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": true
             }
           ],
           "attemptToConvertTypes": false,
@@ -864,7 +879,7 @@
     "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": false
   },
-  "versionId": "7ba276c4-80f3-416b-a9c6-0bdd9f9abaf2",
+  "versionId": "c79657c6-1c32-4189-87fa-26fe9d4b69a5",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "8e15b4b139fc7de5826b5c0082e48be6d2a0a58f6c5ba1c90fe1a225d65da589"
