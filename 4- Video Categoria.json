@@ -1,0 +1,874 @@
+{
+  "name": "4- Video Categoria",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "mensagem_lead"
+            },
+            {
+              "name": "whatsapp_lead"
+            },
+            {
+              "name": "id_conta_chatwoot"
+            },
+            {
+              "name": "id_conversa_chatwoot"
+            },
+            {
+              "name": "url_chatwoot"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -816,
+        -128
+      ],
+      "id": "35399aad-7592-4714-81ff-2f005596cee1",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "leads_adv",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "whatsapp_lead",
+              "keyValue": "={{ $json.whatsapp_lead }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -608,
+        -128
+      ],
+      "id": "e6470bfb-ccf4-4893-ba32-b7fadd43f314",
+      "name": "buscarLeadGate",
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "QyVmMAWVKLOdh0MW",
+          "name": "Supabase-sistema-advogado"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "73b5fe11-f2da-4f56-a235-aa289bc05e42",
+              "leftValue": "={{ $json.video_enviado === true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -400,
+        -128
+      ],
+      "id": "9cc1606d-b6bb-4257-a86c-41a771cab0fd",
+      "name": "leadJaTemVideo?"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        -224
+      ],
+      "id": "18ac62e4-2b7d-4211-bc35-30a73bf93e16",
+      "name": "finalizarSemVideo"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "gatilhos_anuncio",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "ativo",
+              "keyValue": "true"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        -32
+      ],
+      "id": "935c9ef4-7797-4366-a9b2-3d5c8d65f613",
+      "name": "buscarGatilhosAtivos",
+      "credentials": {
+        "supabaseApi": {
+          "id": "QyVmMAWVKLOdh0MW",
+          "name": "Supabase-sistema-advogado"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Texto original, capturado no instante do evento (sem consulta a histórico)\nconst mensagem = ($('When Executed by Another Workflow').first().json.mensagem_lead || '').toLowerCase();\n\n// Gatilhos ativos cadastrados\nconst gatilhos = $input.all().map(item => item.json);\n\nconst encontrado = gatilhos.find(g =>\n  mensagem.includes((g.trecho_chave || '').toLowerCase())\n);\n\nreturn [{\n  json: {\n    categoria: encontrado ? encontrado.categoria : null,\n  },\n  pairedItem: { item: 0 }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        16,
+        -32
+      ],
+      "id": "4a87bca4-3009-4ece-8333-0db8118a8bb0",
+      "name": "matchGatilho"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "1cc63413-11f5-4f5e-ac2f-b28ec9ba824c",
+              "leftValue": "={{ $json.categoria }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        224,
+        -32
+      ],
+      "id": "c492094e-f39d-431d-be95-777b7c5b401f",
+      "name": "bateuGatilho?"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        432,
+        64
+      ],
+      "id": "7819425b-adfa-4e44-ae42-715e0ea50c38",
+      "name": "finalizarSemVideo1"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "videos_categoria",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "categoria",
+              "keyValue": "={{ $json.categoria }}"
+            },
+            {
+              "keyName": "ativo",
+              "keyValue": "true"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        432,
+        -128
+      ],
+      "id": "29754254-dbe5-4980-ab0d-f975e69e9984",
+      "name": "buscarVideoCategoria",
+      "credentials": {
+        "supabaseApi": {
+          "id": "QyVmMAWVKLOdh0MW",
+          "name": "Supabase-sistema-advogado"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $('buscarVideoCategoria').item.json.video_url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "binario"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        784,
+        -128
+      ],
+      "id": "db8c1648-8a5e-412a-9392-12f850f0bbd4",
+      "name": "baixarVideo"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('When Executed by Another Workflow').first().json.url_chatwoot }}api/v1/accounts/{{ $('When Executed by Another Workflow').first().json.id_conta_chatwoot }}/conversations/{{ $('When Executed by Another Workflow').first().json.id_conversa_chatwoot }}/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message_type",
+              "value": "outgoing"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "attachments[]",
+              "inputDataFieldName": "binario"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        992,
+        -128
+      ],
+      "id": "0dbf905f-d64d-4df2-a305-28c8918f12f9",
+      "name": "enviarVideoChatwoot",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ORcXdpQUsAFVM0Vs",
+          "name": "chatwoot-sistema-advogado"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "leads_adv",
+          "mode": "list",
+          "cachedResultName": "leads_adv"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "video_enviado": true,
+            "whatsapp_lead": "={{ $('When Executed by Another Workflow').first().json.whatsapp_lead }}",
+            "categoria_video_enviado": "={{ $('bateuGatilho?').item.json.categoria }}",
+            "id_conta_chatwoot": "={{ $('When Executed by Another Workflow').first().json.id_conta_chatwoot }}",
+            "id_conversa_chatwoot": "={{ $('When Executed by Another Workflow').first().json.id_conversa_chatwoot }}"
+          },
+          "matchingColumns": [
+            "whatsapp_lead"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "nome_lead",
+              "displayName": "nome_lead",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "whatsapp_lead",
+              "displayName": "whatsapp_lead",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "motivo_contato",
+              "displayName": "motivo_contato",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "resumo_conversa",
+              "displayName": "resumo_conversa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "options",
+              "canBeUsedToMatch": false,
+              "options": [
+                {
+                  "name": "novo_contato",
+                  "value": "novo_contato"
+                },
+                {
+                  "name": "conversando",
+                  "value": "conversando"
+                },
+                {
+                  "name": "consulta_agendada",
+                  "value": "consulta_agendada"
+                },
+                {
+                  "name": "compareceu",
+                  "value": "compareceu"
+                },
+                {
+                  "name": "follow_up",
+                  "value": "follow_up"
+                },
+                {
+                  "name": "fechado",
+                  "value": "fechado"
+                },
+                {
+                  "name": "perdido",
+                  "value": "perdido"
+                },
+                {
+                  "name": "confirmado",
+                  "value": "confirmado"
+                }
+              ],
+              "removed": true
+            },
+            {
+              "id": "inicio_atendimento",
+              "displayName": "inicio_atendimento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "ultima_mensagem",
+              "displayName": "ultima_mensagem",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "id_conta_chatwoot",
+              "displayName": "id_conta_chatwoot",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "id_conversa_chatwoot",
+              "displayName": "id_conversa_chatwoot",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "id_lead_chatwoot",
+              "displayName": "id_lead_chatwoot",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "inbox_id_chatwoot",
+              "displayName": "inbox_id_chatwoot",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "follow_up_1",
+              "displayName": "follow_up_1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "follow_up_2",
+              "displayName": "follow_up_2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "follow_up_3",
+              "displayName": "follow_up_3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "data_agendamento",
+              "displayName": "data_agendamento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "id_agendamento",
+              "displayName": "id_agendamento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "anotacoes",
+              "displayName": "anotacoes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "minutos_ultima_mensagem",
+              "displayName": "minutos_ultima_mensagem",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "area_previdenciaria",
+              "displayName": "area_previdenciaria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "options",
+              "canBeUsedToMatch": false,
+              "options": [
+                {
+                  "name": "aposentadoria_idade",
+                  "value": "aposentadoria_idade"
+                },
+                {
+                  "name": "aposentadoria_tempo_contribuicao",
+                  "value": "aposentadoria_tempo_contribuicao"
+                },
+                {
+                  "name": "aposentadoria_especial",
+                  "value": "aposentadoria_especial"
+                },
+                {
+                  "name": "aposentadoria_invalidez",
+                  "value": "aposentadoria_invalidez"
+                },
+                {
+                  "name": "auxilio_doenca",
+                  "value": "auxilio_doenca"
+                },
+                {
+                  "name": "bpc_loas",
+                  "value": "bpc_loas"
+                },
+                {
+                  "name": "pensao_morte",
+                  "value": "pensao_morte"
+                },
+                {
+                  "name": "auxilio_acidente",
+                  "value": "auxilio_acidente"
+                },
+                {
+                  "name": "salario_maternidade",
+                  "value": "salario_maternidade"
+                },
+                {
+                  "name": "revisao_beneficio",
+                  "value": "revisao_beneficio"
+                },
+                {
+                  "name": "nao_identificada",
+                  "value": "nao_identificada"
+                }
+              ],
+              "removed": true
+            },
+            {
+              "id": "status_qualificacao",
+              "displayName": "status_qualificacao",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "options",
+              "canBeUsedToMatch": false,
+              "options": [
+                {
+                  "name": "pendente",
+                  "value": "pendente"
+                },
+                {
+                  "name": "provavel_direito",
+                  "value": "provavel_direito"
+                },
+                {
+                  "name": "duvidoso",
+                  "value": "duvidoso"
+                },
+                {
+                  "name": "sem_direito_aparente",
+                  "value": "sem_direito_aparente"
+                }
+              ],
+              "removed": true
+            },
+            {
+              "id": "respostas_qualificacao",
+              "displayName": "respostas_qualificacao",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "status_atualizado_em",
+              "displayName": "status_atualizado_em",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "owner_id",
+              "displayName": "owner_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "atendimento_humano_ativo",
+              "displayName": "atendimento_humano_ativo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "atendido_por",
+              "displayName": "atendido_por",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "atendimento_humano_desde",
+              "displayName": "atendimento_humano_desde",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "video_enviado",
+              "displayName": "video_enviado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "categoria_video_enviado",
+              "displayName": "categoria_video_enviado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "legenda_enviada",
+              "displayName": "legenda_enviada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1200,
+        -128
+      ],
+      "id": "7111f366-1ca4-4f66-8fd6-2111dccb77e1",
+      "name": "marcarVideoEnviado",
+      "credentials": {
+        "postgres": {
+          "id": "TTRluU2TzYgiju3q",
+          "name": "Postgres-sistema-advogado"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "buscarLeadGate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "buscarLeadGate": {
+      "main": [
+        [
+          {
+            "node": "leadJaTemVideo?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "leadJaTemVideo?": {
+      "main": [
+        [
+          {
+            "node": "finalizarSemVideo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "buscarGatilhosAtivos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "buscarGatilhosAtivos": {
+      "main": [
+        [
+          {
+            "node": "matchGatilho",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "matchGatilho": {
+      "main": [
+        [
+          {
+            "node": "bateuGatilho?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "bateuGatilho?": {
+      "main": [
+        [
+          {
+            "node": "buscarVideoCategoria",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "finalizarSemVideo1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "buscarVideoCategoria": {
+      "main": [
+        [
+          {
+            "node": "baixarVideo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "baixarVideo": {
+      "main": [
+        [
+          {
+            "node": "enviarVideoChatwoot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "enviarVideoChatwoot": {
+      "main": [
+        [
+          {
+            "node": "marcarVideoEnviado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "timezone": "America/Sao_Paulo",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "7ba276c4-80f3-416b-a9c6-0bdd9f9abaf2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8e15b4b139fc7de5826b5c0082e48be6d2a0a58f6c5ba1c90fe1a225d65da589"
+  },
+  "id": "sFbx82Iybngnt5GS",
+  "tags": []
+}
