@@ -120,6 +120,8 @@
       ],
       "id": "95b572ef-8bd4-43d9-8f19-f01eaf22d3ab",
       "name": "Memoria 1",
+      "retryOnFail": true,
+      "waitBetweenTries": 2000,
       "credentials": {
         "postgres": {
           "id": "TTRluU2TzYgiju3q",
@@ -297,7 +299,7 @@
     "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": false
   },
-  "versionId": "812ba5f6-64f4-4d00-866f-ad746ce9dc79",
+  "versionId": "bb68d2d7-df1f-4232-968a-74e3b3266a7f",
   "meta": {
     "instanceId": "8e15b4b139fc7de5826b5c0082e48be6d2a0a58f6c5ba1c90fe1a225d65da589"
   },
