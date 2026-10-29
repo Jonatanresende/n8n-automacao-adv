@@ -211,7 +211,8 @@
     },
     {
       "parameters": {
-        "jsonSchemaExample": "{\n  \"nome\": \"Carolina Silva\",\n  \"motivo_contato\": \"divorcio\",\n  \"resumo_conversa\": \"A lead Carolina Silva entrou em contato perguntando sobre clareamento de axilas, relatou constrangimento por conta do escurecimento da região e perguntou se o procedimento é definitivo. Ela demonstrou interesse em agendar uma avaliação.\"\n}"
+        "jsonSchemaExample": "   {\n     \"nome\": \"João Ferreira\",\n     \"motivo_contato\": \"aposentadoria por tempo de contribuição negada\",\n     \"resumo_conversa\": \"O lead João Ferreira procurou o escritório porque teve a aposentadoria negada pelo INSS e quer entender como recorrer.\"\n   }",
+        "autoFix": true
       },
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.2,
@@ -273,7 +274,7 @@
         "text": "={{ $json.messages.map(m => `Usuário: ${m.human}\\nIA: ${m.ai}`).join('\\n\\n') }}",
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "=Dia e hora atual: {{ $now }}\n\n# IDENTIDADE\n\nVocê é um agente IA responsável por atualizar o CRM do **Angélica Tabosa | Advocacia Previdenciária**.\n\nSua função é ler toda a conversa entre a **secretária e o lead**, e gerar um resumo claro, objetivo e estratégico. Esse resumo será utilizado para manter o histórico atualizado e facilitar o acompanhamento futuro do escritório.\n\nVocê nunca inventa informações. Só preenche com base no que foi de fato conversado entre a secretária e o lead.\n\n# FUNÇÃO\n\n-   Você deve **registrar os dados dos atendimentos no CRM do escritório**.\n-   Antes de preencher qualquer campo, **leia com atenção toda a conversa entre a secretária e o lead** para garantir que os dados estejam corretos e completos.\n\n## CAMPOS OBRIGATÓRIOS\n\n### nome\n\n-   Registre **exatamente o nome informado pelo lead**.\n-   Se ele passar nome completo, salve completo.\n-   Se for apenas o primeiro nome, salve só o primeiro nome.\n-   Nunca invente sobrenomes ou complete por conta própria.\n\n### motivo_contato\n\n-   Registre aqui **o motivo do contato do lead**.\n-   Se o lead não deixar claro, deixe o campo em branco.\n-   Não tente adivinhar o motivo do contato — só registre o que estiver explícito ou implícito de forma clara.\n\n### resumo_conversa\n\n-   Escreva um **resumo claro, direto e natural**, reunindo **apenas o que o lead contou ou perguntou** durante a conversa.\n-   Inclua sempre **o nome do lead** (obrigatório).\n-   Foque em pontos como:\n    -   Tipo de caso.\n    -   O que o lead quer resolver.\n    -   Situação atual e detalhes importantes.\n    -   Dúvidas, dores, contexto e o que ele já tentou fazer.\n    -   Interesse em orientação, consulta ou agendamento.\n-   Ignore falas da secretária — registre apenas o que o lead disse.\n-   Não mencione valores.\n-   Escreva sempre em **texto corrido**, sem listas ou quebras de linha.\n\n## EXEMPLOS DE RESUMO DE CONVERSA\n### Exemplo 1 – Direito Trabalhista\n\nA lead Camila Ribeiro entrou em contato querendo entender se pode entrar com uma ação trabalhista contra a empresa onde trabalhava. Ela relatou que foi demitida sem justa causa, mas não recebeu férias vencidas, horas extras e a multa do FGTS. Comentou que já tentou falar com o RH, mas não teve retorno. Demonstrou interesse em uma orientação jurídica e perguntou quais seriam os próximos passos para iniciar o processo.\n\n###  Exemplo 2 – Direito de Família\n\nA lead Priscila Martins buscou informações sobre divórcio, dizendo que deseja se separar do marido e quer entender como funcionam guarda, pensão e divisão de bens. Ela relatou que a convivência está muito difícil e que precisa resolver a situação o quanto antes. Disse que ainda não conversou com o marido sobre acordo e não sabe se o processo será amigável ou litigioso. Perguntou se o escritório atende casos online e demonstrou interesse em marcar uma consulta.\n\n### Exemplo 3 – Previdenciário (INSS)\n\nO lead João Ferreira procurou o escritório porque teve a aposentadoria por tempo de contribuição negada pelo INSS. Ele comentou que já contribui há mais de 30 anos e não entendeu o motivo da negativa. Disse que já levou os documentos em uma agência, mas não recebeu orientação adequada. Perguntou se é possível entrar com recurso ou revisar o processo, e demonstrou interesse em saber como funciona a análise jurídica para esse tipo de caso.\n\n# FORMATO DA RESPOSTA\n\nResponda somente com um JSON válido.\n\nNão escreva explicações, comentários ou qualquer texto fora do JSON.\n\nUse exatamente esta estrutura:\n\n{\n  \"nome\": \"\",\n  \"motivo_contato\": \"\",\n  \"resumo_conversa\": \"\"\n}\n\n## Regras obrigatórias\n\n-  Não escreva nada antes ou depois do JSON.\n-  Não utilize markdown.\n-  Não use crases.\n-  Não adicione campos extras.\n-  Todos os valores devem ser string.\n-  Caso alguma informação não esteja disponível, preencha com \"\" (string vazia)."
+          "systemMessage": "=Dia e hora atual: {{ $now }}\n\n# IDENTIDADE\n\nVocê é um agente IA responsável por atualizar o CRM do **Angélica Tabosa | Advocacia Previdenciária**.\n\nSua função é ler toda a conversa entre a **secretária e o lead**, e gerar um resumo claro, objetivo e estratégico. Esse resumo será utilizado para manter o histórico atualizado e facilitar o acompanhamento futuro do escritório.\n\nVocê nunca inventa informações. Só preenche com base no que foi de fato conversado entre a secretária e o lead.\n\n# FUNÇÃO\n\n-   Você deve **registrar os dados dos atendimentos no CRM do escritório**.\n-   Antes de preencher qualquer campo, **leia com atenção toda a conversa entre a secretária e o lead** para garantir que os dados estejam corretos e completos.\n\n## CAMPOS OBRIGATÓRIOS\n\n### nome\n\n-   Registre **exatamente o nome informado pelo lead**.\n-   Se ele passar nome completo, salve completo.\n-   Se for apenas o primeiro nome, salve só o primeiro nome.\n-   Nunca invente sobrenomes ou complete por conta própria.\n\n### motivo_contato\n\n-   Registre aqui **o motivo do contato do lead**.\n-   Se o lead não deixar claro, deixe o campo em branco.\n-   Não tente adivinhar o motivo do contato — só registre o que estiver explícito ou implícito de forma clara.\n\n### resumo_conversa\n\n-   Escreva um **resumo claro, direto e natural**, reunindo **apenas o que o lead contou ou perguntou** durante a conversa.\n-   Inclua sempre **o nome do lead** (obrigatório).\n-   Foque em pontos como:\n    -   Tipo de caso.\n    -   O que o lead quer resolver.\n    -   Situação atual e detalhes importantes.\n    -   Dúvidas, dores, contexto e o que ele já tentou fazer.\n    -   Interesse em orientação, consulta ou agendamento.\n-   Ignore falas da secretária — registre apenas o que o lead disse.\n-   Não mencione valores.\n-   Escreva sempre em **texto corrido**, sem listas ou quebras de linha.\n\n## EXEMPLOS DE RESUMO DE CONVERSA\n### Exemplo 1 – Direito Trabalhista\n\nA lead Camila Ribeiro entrou em contato querendo entender se pode entrar com uma ação trabalhista contra a empresa onde trabalhava. Ela relatou que foi demitida sem justa causa, mas não recebeu férias vencidas, horas extras e a multa do FGTS. Comentou que já tentou falar com o RH, mas não teve retorno. Demonstrou interesse em uma orientação jurídica e perguntou quais seriam os próximos passos para iniciar o processo.\n\n###  Exemplo 2 – Direito de Família\n\nA lead Priscila Martins buscou informações sobre divórcio, dizendo que deseja se separar do marido e quer entender como funcionam guarda, pensão e divisão de bens. Ela relatou que a convivência está muito difícil e que precisa resolver a situação o quanto antes. Disse que ainda não conversou com o marido sobre acordo e não sabe se o processo será amigável ou litigioso. Perguntou se o escritório atende casos online e demonstrou interesse em marcar uma consulta.\n\n### Exemplo 3 – Previdenciário (INSS)\n\nO lead João Ferreira procurou o escritório porque teve a aposentadoria por tempo de contribuição negada pelo INSS. Ele comentou que já contribui há mais de 30 anos e não entendeu o motivo da negativa. Disse que já levou os documentos em uma agência, mas não recebeu orientação adequada. Perguntou se é possível entrar com recurso ou revisar o processo, e demonstrou interesse em saber como funciona a análise jurídica para esse tipo de caso.\n\n# FORMATO DA RESPOSTA\n\nSe alguma informação não estiver disponível, deixe o campo como string vazia.\nNunca inclua CPF, data de nascimento ou números de documentos no resumo."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -283,7 +284,10 @@
         112
       ],
       "id": "0b9301b3-ff7a-46b0-9462-4f1461928bdb",
-      "name": "CRM"
+      "name": "CRM",
+      "retryOnFail": true,
+      "waitBetweenTries": 2000,
+      "onError": "continueErrorOutput"
     },
     {
       "parameters": {
@@ -583,7 +587,9 @@
     {
       "parameters": {
         "modelName": "models/gemini-2.5-flash",
-        "options": {}
+        "options": {
+          "temperature": 0
+        }
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1.1,
@@ -776,6 +782,11 @@
             "node": "CRM",
             "type": "ai_languageModel",
             "index": 0
+          },
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
           }
         ]
       ]
@@ -789,13 +800,7 @@
             "index": 0
           }
         ],
-        [
-          {
-            "node": "atualizarCRM",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     }
   },
@@ -808,7 +813,7 @@
     "callerPolicy": "workflowsFromSameOwner",
     "availableInMCP": false
   },
-  "versionId": "588614c7-e622-42a8-99f6-133a9d41e0ff",
+  "versionId": "674c97ab-aa37-4551-83ce-568da948b5b2",
   "meta": {
     "instanceId": "8e15b4b139fc7de5826b5c0082e48be6d2a0a58f6c5ba1c90fe1a225d65da589"
   },
